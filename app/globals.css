@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -115,6 +116,26 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+@layer utilities {
+  .liora-bg {
+    background: radial-gradient(
+        circle at top left,
+        rgba(255, 182, 193, 0.45),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at bottom right,
+        rgba(173, 216, 230, 0.5),
+        transparent 45%
+      ),
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f7fbff 50%,
+        #ffffff 100%
+      );
+  }
 }
 
 @layer base {

@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]">
+    <main className="min-h-screen flex items-center justify-center liora-bg">
       
       <GlassAvatar glowEffect>
         <Avatar className="w-28 h-28">
