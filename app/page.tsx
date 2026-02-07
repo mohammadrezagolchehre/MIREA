@@ -2,18 +2,36 @@
 
 import { GlassAvatar } from "@/components/ui/glass-avatar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import MessageInput from "@/components/ui/Liora/message-input";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center liora-bg">
-      
-      <GlassAvatar glowEffect>
-        <Avatar className="w-28 h-28">
-          <AvatarImage src="https://i.pravatar.cc/300" />
-          <AvatarFallback>LI</AvatarFallback>
-        </Avatar>
-      </GlassAvatar>
+<main className="relative min-h-screen flex flex-col justify-center items-center liora-bg px-4">
+  
+     <header className="absolute top-6 right-6 z-20">
+      <div className="flex gap-3">
+        <button className="btn-login">
+            ورود
+        </button>
 
-    </main>
+        <button className="btn-register">
+            ثبت‌نام
+         </button>
+      </div>
+    </header>
+
+    <div className="liora-vintage" />
+
+
+    <div className="mb-10 z-10">
+
+    </div>
+
+
+    <div className="w-full z-10">
+    <MessageInput />
+    </div>
+</main>
+
   );
 }
