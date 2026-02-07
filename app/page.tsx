@@ -2,7 +2,7 @@
 
 import { GlassAvatar } from "@/components/ui/glass-avatar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import MessageInput from "@/components/ui/Liora/message-input";
+import ChatContainer from "@/components/ui/Liora/ChatContainer";
 
 export default function Home() {
   return (
@@ -19,7 +19,7 @@ export default function Home() {
          </button>
       </div>
     </header>
-
+    <ChatContainer />
     <div className="liora-vintage" />
 
 
@@ -29,7 +29,7 @@ export default function Home() {
 
 
     <div className="w-full z-10">
-    <MessageInput />
+    
     </div>
 </main>
 
