@@ -7,6 +7,7 @@ import { GlassInput } from "@/components/ui/glass-input"
 import { GlassButton } from "@/components/ui/glass-button"
 import { GlassCheckbox } from "@/components/glass-checkbox"
 import { Label } from "@radix-ui/react-label"
+import { useRouter } from "next/navigation"
 
 interface ValidationRules {
   minLength: boolean
@@ -26,6 +27,7 @@ export default function SignupPageBlock() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [agreeToTerms, setAgreeToTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const validatePassword = (pwd: string): ValidationRules => ({
     minLength: pwd.length >= 8,
@@ -51,7 +53,9 @@ export default function SignupPageBlock() {
   }
 
   return (
-    <div className="min-full py-4 flex items-center justify-center liora-bg px-4">
+    <div className="min-h-screen py-4 flex items-center justify-center liora-bg px-4 sm:px-6 md:px-12 lg:px-40">
+
+
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-2">
@@ -59,8 +63,8 @@ export default function SignupPageBlock() {
               <UserPlus className="h-6 w-6 text-white" />
             </div>
           </div>
-          <GlassCardTitle className="text-2xl">Create Account</GlassCardTitle>
-          <GlassCardDescription>Join us today and get started</GlassCardDescription>
+          <GlassCardTitle className="text-2xl">ساخت حساب کاربری</GlassCardTitle>
+          <GlassCardDescription className="text-black/65" dir="rtl">یه چیزی مینویسم اینجا!</GlassCardDescription>
         </GlassCardHeader>
 
         <GlassCardContent>
@@ -68,29 +72,29 @@ export default function SignupPageBlock() {
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-white/80">
-                  First Name
+                <Label htmlFor="lastName" className="text-black/65">
+                  نام خانوادگی
                 </Label>
                 <GlassInput
-                  id="firstName"
+                  id="lastName"
                   type="text"
-                  placeholder="John"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="محبعلی"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   required
                   className="bg-white/5"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-white/80">
-                  Last Name
+                <Label htmlFor="firstName" className="text-black/65">
+                  نام
                 </Label>
                 <GlassInput
-                  id="lastName"
+                  id="firstName"
                   type="text"
-                  placeholder="Doe"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="آرمان"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   required
                   className="bg-white/5"
                 />
@@ -99,8 +103,8 @@ export default function SignupPageBlock() {
 
             {/* Email Input */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/80">
-                Email Address
+              <Label htmlFor="email" className="text-black/65">
+                آدرس ایمیل
               </Label>
               <GlassInput
                 id="email"
@@ -115,8 +119,8 @@ export default function SignupPageBlock() {
 
             {/* Password Input */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white/80">
-                Password
+              <Label htmlFor="password" className="text-black/65">
+                رمز عبور
               </Label>
               <div className="relative">
                 <GlassInput
@@ -139,21 +143,21 @@ export default function SignupPageBlock() {
               {/* Password Strength Indicator */}
               {password.length > 0 && (
                 <div className="space-y-2 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <p className="text-xs font-medium text-white/60 mb-2">Password requirements:</p>
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <p className="text-xs font-medium text-black/60 mb-2" dir="rtl">رمز عبور باید شامل:</p>
+                  <div className="grid grid-cols-2 gap-1.5" dir="rtl">
                     {[
-                      { key: "minLength", label: "8+ characters" },
-                      { key: "hasUpperCase", label: "Uppercase letter" },
-                      { key: "hasLowerCase", label: "Lowercase letter" },
-                      { key: "hasNumber", label: "Number" },
-                      { key: "hasSpecial", label: "Special character" },
+                      { key: "minLength", label: "بیشتر از 8 کاراکتر" },
+                      { key: "hasUpperCase", label: "دارای حروف یزرگ" },
+                      { key: "hasLowerCase", label: "دارای حروف کوچک" },
+                      { key: "hasNumber", label: "اعداد" },
+                      { key: "hasSpecial", label: "استفاده از حروف خاص" },
                     ].map((rule) => (
                       <div key={rule.key} className="flex items-center gap-1.5">
                         <div className={`h-1.5 w-1.5 rounded-full transition-colors ${
                           validation[rule.key as keyof ValidationRules] ? "bg-green-400" : "bg-white/20"
                         }`} />
                         <span className={`text-xs transition-colors ${
-                          validation[rule.key as keyof ValidationRules] ? "text-green-400" : "text-white/40"
+                          validation[rule.key as keyof ValidationRules] ? "text-green-400" : "text-black/65"
                         }`}>
                           {rule.label}
                         </span>
@@ -166,8 +170,8 @@ export default function SignupPageBlock() {
 
             {/* Confirm Password */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white/80">
-                Confirm Password
+              <Label htmlFor="confirmPassword" className="text-black/65">
+                تکرار رمز عبور
               </Label>
               <div className="relative">
                 <GlassInput
@@ -202,7 +206,7 @@ export default function SignupPageBlock() {
                   setAgreeToTerms(checked)
                 }
               }} />
-              <Label htmlFor="terms" className="text-white/70 cursor-pointer text-sm leading-tight">
+              <Label htmlFor="terms" className="text-black/65 cursor-pointer text-sm leading-tight">
                 I agree to the{" "}
                 <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
                   Terms of Service
@@ -224,20 +228,20 @@ export default function SignupPageBlock() {
               {isLoading ? (
                 <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2" />
-                  Creating account...
+                  ... درحال ساخت حساب
                 </>
               ) : (
                 <>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Sign Up
+                  ساخت حساب کاربری
                 </>
               )}
             </GlassButton>
 
             {/* Sign In Link */}
-            <p className="text-center text-sm text-white/60">
-              Already have an account?{" "}
-              <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
+            <p className="text-center text-sm text-black/65" dir="rtl">
+              از قبل ثبت نام کرده اید؟{" "}
+              <a onClick={() => router.push("/auth/login")} className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
                 Sign in
               </a>
             </p>

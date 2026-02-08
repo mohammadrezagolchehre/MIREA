@@ -25,7 +25,9 @@ export default function LoginPageBlock() {
   }
 
   return (
-    <div className="min-full py-4 flex items-center justify-center liora-bg px-4">
+    <div className="min-h-screen py-4 flex items-center justify-center liora-bg px-4 sm:px-6 md:px-12 lg:px-40">
+
+
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-2">
@@ -33,16 +35,16 @@ export default function LoginPageBlock() {
               <LogIn className="h-6 w-6 text-white" />
             </div>
           </div>
-          <GlassCardTitle className="text-xl">Welcome Back</GlassCardTitle>
-          <GlassCardDescription>Sign in to your account to continue</GlassCardDescription>
+          <GlassCardTitle className="text-xl text-black">خوش آمدید</GlassCardTitle>
+          <GlassCardDescription className="text-black">برای ادامه به حساب کاربری خود وارد شوید</GlassCardDescription>
         </GlassCardHeader>
 
         <GlassCardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/80">
-                Email Address
+              <Label htmlFor="email" className="text-black/65" >
+                آدرس ایمیل
               </Label>
               <GlassInput
                 id="email"
@@ -58,15 +60,15 @@ export default function LoginPageBlock() {
             {/* Password Input */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-white/80">
-                  Password
+                <Label htmlFor="password" className="text-black/65 text-right ">
+                  رمز عبور
                 </Label>
                           
                 <a
                   onClick={() => router.push("/auth/forgot-password")}
                   className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
                 >
-                  Forgot password?
+                  فراموشی رمز عبور؟
                 </a>
 
                 
@@ -95,12 +97,12 @@ export default function LoginPageBlock() {
               {isLoading ? (
                 <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2" />
-                  Signing in...
+                  ... درحال ورود
                 </>
               ) : (
                 <>
                   <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
+                  ورود
                 </>
               )}
             </GlassButton>
@@ -108,10 +110,7 @@ export default function LoginPageBlock() {
             {/* Divider */}
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-black/40 px-2 text-white/40">Or continue with</span>
+                <div className="w-full border-t border-white" />
               </div>
             </div>
 
@@ -147,9 +146,9 @@ export default function LoginPageBlock() {
             </div>
 
             {/* Sign Up Link */}
-            <p className="text-center text-sm text-white/60">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
+            <p className="text-center text-sm text-white/60" dir="rtl">
+              حساب کاربری ندارید؟{" "}
+              <a onClick={() => router.push("/auth/signup")} className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
                 Sign up
               </a>
             </p>

@@ -27,7 +27,9 @@ export default function ForgotPasswordPageBlock() {
   }
 
   return (
-    <div className="min-full py-4 flex items-center justify-center liora-bg px-40">
+    <div className="min-h-screen py-4 flex items-center justify-center liora-bg px-4 sm:px-6 md:px-12 lg:px-40">
+
+
       <GlassCard className="w-full max-w-md">
         {!isSubmitted ? (
           <>
@@ -37,9 +39,9 @@ export default function ForgotPasswordPageBlock() {
                   <Mail className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <GlassCardTitle className="text-2xl">Forgot Password?</GlassCardTitle>
-              <GlassCardDescription>
-                No problem! Enter your email and we&apos;ll send you a link to reset your password.
+              <GlassCardTitle className="text-2xl">بازیابی رمز عبور</GlassCardTitle>
+              <GlassCardDescription className="text-black/65">
+                مشکلی در ورود دارید؟ ایمیل خود را وارد کنید تا لینک بازیابی رمز عبور برای شما ارسال شود.
               </GlassCardDescription>
             </GlassCardHeader>
 
@@ -47,8 +49,8 @@ export default function ForgotPasswordPageBlock() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Email Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white/80">
-                    Email Address
+                  <Label htmlFor="email" className="text-black/65 text-right" dir="rtl">
+                    آدرس ایمیل شما
                   </Label>
                   <GlassInput
                     id="email"
@@ -59,8 +61,8 @@ export default function ForgotPasswordPageBlock() {
                     required
                     className="bg-white/5"
                   />
-                  <p className="text-xs text-white/50 mt-1">
-                    We&apos;ll send a password reset link to this email address.
+                  <p className="text-xs text-black/65 mt-1 text-right" dir="rtl">
+                    مطمئن شوید که ایمیل وارد شده صحیح است و به آن دسترسی دارید، زیرا لینک بازیابی به این آدرس ارسال خواهد شد.
                   </p>
                 </div>
 
@@ -69,12 +71,12 @@ export default function ForgotPasswordPageBlock() {
                   {isLoading ? (
                     <>
                       <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2" />
-                      Sending...
+                      ... در حال ارسال
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Reset Link
+                      ارسال لینک بازیابی
                     </>
                   )}
                 </GlassButton>
@@ -99,36 +101,32 @@ export default function ForgotPasswordPageBlock() {
                   <Mail className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <GlassCardTitle className="text-2xl">Check Your Email</GlassCardTitle>
-              <GlassCardDescription>
-                We&apos;ve sent a password reset link to{" "}
-                <span className="font-medium text-white/90">{email}</span>
+              <GlassCardTitle className="text-2xl">ایمیل های خود را چک کنید</GlassCardTitle>
+              <GlassCardDescription className="text-black/65 " >
+                ما ایمیل بازیابی رمز عبورتان را برایتان ارسال کردیم{" "}
+                <span className="font-medium text-black/65 justify-center" >{email}</span>
               </GlassCardDescription>
             </GlassCardHeader>
 
             <GlassCardContent className="space-y-6">
               {/* Success Message */}
               <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-                <p className="text-sm text-green-400">
-                  Please check your email and follow the instructions to reset your password. The link expires in 24 hours.
+                <p className="text-sm text-green-400" dir="rtl">
+                  لطفاً صندوق ورودی ایمیل خود را بررسی کنید و روی لینک بازیابی رمز عبور کلیک کنید تا یک رمز عبور جدید تنظیم کنید. اگر ایمیل را دریافت نکردید، ممکن است در پوشه اسپم یا هرزنامه باشد.
                 </p>
               </div>
 
               {/* Helpful Tips */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-white/80">Didn&apos;t receive the email?</h3>
+              <div className="space-y-3" dir="rtl">
+                <h3 className="text-sm font-medium text-white/80">ایمیل دریافت نکردید؟</h3>
                 <ul className="space-y-2 text-xs text-white/60">
                   <li className="flex gap-2">
                     <span className="text-cyan-400">•</span>
-                    <span>Check your spam or junk folder</span>
+                    <span>پوشه اسپم یا هرزنامه را بررسی کنید.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-cyan-400">•</span>
-                    <span>Make sure you entered the correct email address</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-cyan-400">•</span>
-                    <span>Try using a different email address if you have one on file</span>
+                    <span>مطمئن شوید که ایمیل درست را وارد کرده اید.</span>
                   </li>
                 </ul>
               </div>
@@ -141,7 +139,7 @@ export default function ForgotPasswordPageBlock() {
                   className="flex-1"
                   onClick={handleBack}
                 >
-                  Try Different Email
+                  از اول شروع کنید
                 </GlassButton>
                 <GlassButton
                   type="button"
@@ -153,14 +151,14 @@ export default function ForgotPasswordPageBlock() {
                   {isLoading ? (
                     <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   ) : (
-                    "Resend Email"
+                    "ارسال مجدد ایمیل"
                   )}
                 </GlassButton>
               </div>
 
               {/* Contact Support */}
-              <p className="text-center text-xs text-white/50 pt-4 border-t border-white/10">
-                Still need help?{" "}
+              <p className="text-center text-xs text-white/50 pt-4 border-t border-white/10" dir="rtl">
+                همچنان به کمک نیاز دارید؟{" "}
                 <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
                   Contact support
                 </a>
