@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-
+import { GlassTextarea } from "@/components/glass-textarea";
+import { GlassInput } from "@/components/ui/glass-input";
+import { GlassButton } from "@/components/ui/glass-button";
 type MessageInputProps = {
   onSend: (text: string) => void;
 };
@@ -10,32 +12,48 @@ type MessageInputProps = {
 export default function MessageInput({ onSend }: MessageInputProps) {
   const [message, setMessage] = useState("");
 
+
+  const isMultiline = message.includes("\n") || message.length > 32;
+
   const handleSend = () => {
     if (!message.trim()) return;
-    onSend(message);   // پیام به بیرون ارسال میشه
-    setMessage("");    // خالی کردن input بعد از ارسال
+    onSend(message);  
+    setMessage("");  
   };
 
-  return (
-    <div className="w-full max-w-xl mx-auto">
-      <div className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-white/60 backdrop-blur-xl border border-pink/40 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-        <button
-          onClick={handleSend}
-          disabled={!message.trim()}
-          className="h-10 w-10 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-300 to-sky-300 text-white transition hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-        >
-          <Send size={18} />
-        </button>
+return (
+  <div className="w-full max-w-xl mx-auto relative">
 
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={1}
-          dir="rtl"
-          placeholder="سلام، چطور میتونم کمکت کنم؟"
-          className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none text-right"
-        />
-      </div>
-    </div>
-  );
+    {isMultiline ? (
+      <GlassTextarea
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        rows={2}
+        className="pr-12"
+        placeholder="اینجا برامون بنویس"
+        autoFocus
+      />
+    ) : (
+      <GlassInput
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        className="pr-12"
+        placeholder="اینجا برامون بنویس"
+        autoFocus
+      />
+    )}
+
+    <GlassButton
+      variant="primary"
+      size="icon"
+      onClick={handleSend}
+      disabled={!message.trim()}
+      className="absolute left-2 bottom-6"
+    >
+      <Send size={16} />
+    </GlassButton>
+
+  </div>
+);
+
 }
