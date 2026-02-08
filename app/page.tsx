@@ -4,15 +4,17 @@ import { GlassAvatar } from "@/components/ui/glass-avatar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
 import { GlassButton } from "@/components/ui/glass-button";
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {
+  const router = useRouter();
   return (
 <main className="relative min-h-screen flex flex-col justify-center items-center liora-bg px-4">
   
     <header className="absolute top-6 right-6 z-20 flex gap-3">
-      <GlassButton variant="default">ورود</GlassButton>
-      <GlassButton variant="primary">ثبت نام</GlassButton>
+      <GlassButton variant="default" onClick={() => router.push("./auth/login")} >ورود</GlassButton>
+      <GlassButton variant="primary" onClick={() => router.push("./auth/signup")}>ثبت نام</GlassButton>
     </header>
 
 

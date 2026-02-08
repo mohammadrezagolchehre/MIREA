@@ -48,7 +48,7 @@ return (
       size="icon"
       onClick={handleSend}
       disabled={!message.trim()}
-      className="absolute left-2 bottom-6"
+      className="absolute left-2 bottom-7.5"
     >
       <Send size={16} />
     </GlassButton>

@@ -18,7 +18,7 @@ const glassButtonVariants = cva(
     variants: {
       variant: {
         default: cn(
-          "bg-white/20 backdrop-blur-xl border border-white/30 text-white",
+          "bg-white/20 backdrop-blur-xl border border-white/30 text-black",
           "shadow-[0_4px_16px_rgba(0,0,0,0.2)]",
           "hover:bg-white/30 hover:border-white/40",
           "before:absolute before:inset-0 before:rounded-xl",
