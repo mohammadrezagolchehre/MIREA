@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 
@@ -10,8 +9,12 @@ type Message = {
   text: string;
 };
 
-export default function ChatContainer() {
-  const [messages, setMessages] = useState<Message[]>([]);
+type Props = {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+};
+
+export default function ChatContainer({ messages, setMessages }: Props) {
 
   const handleSend = (text: string) => {
     if (!text.trim()) return;
@@ -24,7 +27,7 @@ export default function ChatContainer() {
 
     setMessages((prev) => [...prev, userMessage]);
 
-    // پاسخ AI (شبیه‌سازی شده)
+    // پاسخ AI (شبیه‌سازی)
     setTimeout(() => {
       const aiMessage: Message = {
         id: crypto.randomUUID(),

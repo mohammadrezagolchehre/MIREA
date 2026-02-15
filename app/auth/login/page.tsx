@@ -7,6 +7,7 @@ import { GlassInput } from "@/components/ui/glass-input"
 import { GlassButton } from "@/components/ui/glass-button"
 import { Label } from "@radix-ui/react-label"
 import { useRouter } from "next/navigation"
+import Grainient from "@/components/Grainient";
 
 export default function LoginPageBlock() {
   const router = useRouter()
@@ -25,8 +26,20 @@ export default function LoginPageBlock() {
   }
 
   return (
-    <div className="min-h-screen py-4 flex items-center justify-center liora-bg px-4 sm:px-6 md:px-12 lg:px-40">
+    <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40">
 
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <Grainient
+          color1="DDAED3"      
+          color2="F1E6C9"     
+          color3="B0FFFA"      
+          timeSpeed={0.15}    
+          grainAmount={0.05}   
+          warpStrength={0.8}  
+          zoom={1.0}
+          className="w-full h-full"
+        />
+      </div>
 
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
