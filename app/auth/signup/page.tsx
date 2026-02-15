@@ -70,10 +70,10 @@ export default function SignupPageBlock() {
         <GlassCardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-3">
+            <div dir="rtl" className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="text-black/65">
-                  نام خانوادگی
+                  نام
                 </Label>
                 <GlassInput
                   id="lastName"
@@ -87,7 +87,7 @@ export default function SignupPageBlock() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="text-black/65">
-                  نام
+                  نام خانوادگی
                 </Label>
                 <GlassInput
                   id="firstName"
@@ -102,7 +102,7 @@ export default function SignupPageBlock() {
             </div>
 
             {/* Email Input */}
-            <div className="space-y-2">
+            <div dir="rtl"className="space-y-2">
               <Label htmlFor="email" className="text-black/65">
                 آدرس ایمیل
               </Label>
@@ -118,7 +118,7 @@ export default function SignupPageBlock() {
             </div>
 
             {/* Password Input */}
-            <div className="space-y-2">
+            <div dir="rtl" className="space-y-2">
               <Label htmlFor="password" className="text-black/65">
                 رمز عبور
               </Label>
@@ -169,7 +169,7 @@ export default function SignupPageBlock() {
             </div>
 
             {/* Confirm Password */}
-            <div className="space-y-2">
+            <div dir="rtl" className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-black/65">
                 تکرار رمز عبور
               </Label>
@@ -200,7 +200,7 @@ export default function SignupPageBlock() {
             </div>
 
             {/* Terms Agreement */}
-            <div className="flex items-start space-x-2 pt-2">
+            <div  className="flex items-start space-x-2 pt-2">
               <GlassCheckbox id="terms" checked={agreeToTerms} onCheckedChange={(checked) => {
                 if (typeof checked === 'boolean') {
                   setAgreeToTerms(checked)

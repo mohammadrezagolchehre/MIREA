@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Vazirmatn } from "next/font/google";
 
+const vazir = Vazirmatn({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  variable: "--font-vazir",
+});
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={vazir.className}
       >
         {children}
       </body>

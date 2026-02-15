@@ -36,7 +36,7 @@ export default function ChatContainer() {
   };
 
   return (
-    <div className="w-full max-w-xl z-10 flex flex-col gap-2">
+    <div className="w-full max-w-4xl z-10 flex flex-col gap-4">
       <MessageList messages={messages} />
       <MessageInput onSend={handleSend} />
     </div>

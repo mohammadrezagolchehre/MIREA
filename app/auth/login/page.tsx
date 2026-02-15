@@ -42,7 +42,7 @@ export default function LoginPageBlock() {
         <GlassCardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
-            <div className="space-y-2">
+            <div dir="rtl" className="space-y-2">
               <Label htmlFor="email" className="text-black/65" >
                 آدرس ایمیل
               </Label>
@@ -58,7 +58,7 @@ export default function LoginPageBlock() {
             </div>
 
             {/* Password Input */}
-            <div className="space-y-2">
+            <div dir="rtl" className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-black/65 text-right ">
                   رمز عبور

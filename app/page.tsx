@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
 import { GlassButton } from "@/components/ui/glass-button";
 import { useRouter } from "next/navigation";
+import BlurText from "@/components/ui/Welcome";
 
 
 export default function Home() {
@@ -17,7 +18,16 @@ export default function Home() {
       <GlassButton variant="primary" onClick={() => router.push("./auth/signup")}>ثبت نام</GlassButton>
     </header>
 
-
+  <section className="min-h-screen flex flex-col justify-center items-center text-center">
+    <BlurText
+      text="خوش آمدید به لیورا"
+      animateBy="words"
+      direction="top"
+      className="text-4xl font-bold text-black"
+      delay={150}
+    />
+  </section>
+  
     <ChatContainer />
     <div className="liora-vintage" />
 
