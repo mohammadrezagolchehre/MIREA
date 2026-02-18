@@ -46,7 +46,7 @@ export default function ChatContainer({ messages, setMessages }: Props) {
       </div>
 
       
-      <div className="border-t border-white/20 backdrop-blur-md p-4 shrink-0">
+      <div className="p-4 shrink-0">
         
         {messages.length === 0 && (
           <div className="mb-4">

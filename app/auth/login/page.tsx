@@ -29,13 +29,14 @@ export default function LoginPageBlock() {
   return (
     <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40">
 
-      <div className="fixed inset-0 -z-10 pointer-events-none">
+    
+      <div className="fixed inset-0 -z-10 bg-black/30 backdrop-blur-[2px]">
         <Grainient
-          color1="FF4F9A"      
-          color2="FDF9FF"     
-          color3="2B3FFF"     
+          color1="9F1F56"      
+          color2="E4D5FF"     
+          color3="1420A6"     
           timeSpeed={0.15}    
-          grainAmount={0.05}   
+          grainAmount={0.02}   
           warpStrength={0.8}  
           zoom={1.0}
           className="w-full h-full trans"

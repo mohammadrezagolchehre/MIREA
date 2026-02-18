@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { GlassWidgetBase } from "./base-widget";
+import { GlassWidgetBase } from "./ui/base-widget";
 
 interface StockTickerWidgetProps {
   symbol: string;

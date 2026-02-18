@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import { GlassButton } from "@/components/ui/glass-button";
 import BlurText from "@/components/ui/Welcome";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
@@ -12,6 +11,7 @@ import { StatsGrid } from "@/components/stats-widget";
 import { Users } from "lucide-react";
 import GradientText from "@/components/ui/GradiantText";
 import OptionChips from "@/components/ui/Liora/OptionChips";
+import { StockTickerWidget } from "@/components/stock-widget";
 
 
 export default function Home() {
@@ -27,22 +27,27 @@ export default function Home() {
   return (
     <div className="relative min-h-screen isolate">
 
-    
-      <div className="fixed inset-0 -z-10 pointer-events-none">
+          
+
+      <div className="fixed inset-0 -z-20 pointer-events-none">
         <Grainient
-          color1="FF4F9A"      
-          color2="FDF9FF"     
-          color3="2B3FFF"     
-          timeSpeed={0.15}    
-          grainAmount={0.05}   
-          warpStrength={0.8}  
+          color1="FF52A0"
+          color2="E4D5FF"
+          color3="1420A6"
+          timeSpeed={0.15}
+          grainAmount={0.02}
+          warpStrength={0.8}
           zoom={1.0}
-          className="w-full h-full trans"
+          className="w-full h-full"
         />
       </div>
 
-      <main className="relative min-h-screen flex flex-col px-4">
-        <header className="absolute top-6 right-6 z-20 flex gap-3">
+
+      <div className="fixed inset-0 -z-10 bg-black/30 pointer-events-none" />
+
+
+      <main className="relative h-[100dvh] flex flex-col overflow-hidden px-4">
+        <header className="absolute top-6 right-6 z-20 flex gap-3 jus">
           <GlassButton className=" " variant="destructive"
           onClick={()=> router.push("./pricing")}>
             خرید اشتراک
@@ -63,56 +68,73 @@ export default function Home() {
           </GlassButton>
 
         </header>
+        <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto">
         {messages.length === 0 && (
-          <section className="flex flex-col items-center justify-center text-center z-10 gap-4 pt-32">
-            <div className="text-4xl md:text-3xl font-bold text-white drop-shadow-lg">
+          <section className="w-full max-w-5xl mx-auto flex flex-col items-center gap-10 py-10">
+            <div className="text-center space-y-3">
+            <div className="text-3xl md:text-4xl font-bold text-white">
               Hello, I am{" "}
               <GradientText
                 text="Liora"
               />
             </div>
 
-            <div className="text-2xl md:text-xl text-white/90 ">
+            <div className="text-lg md:text-xl text-white/80">
               Your AI companion for your emotions.
+            </div>
             </div>
           </section>
           
           
         )}
+        </div>
         
-          {messages.length === 0 && (
-            <div dir="RTL" className="mt-16  w-full flex justify-center" >
-              <div className="w-full max-w-4xl px-4">
-                <StatsGrid
-                  stats={[
-                    {
-                      title: "وضعیت احساسی امروز",
-                      value: "آرام و متفکر",
-                      change: { value: 6.4, type: "increase" },
-                      glowColor: "purple",
-                    },
-                    {
-                      title: "گفتگوهای عمیق این هفته",
-                      value: "18 مکالمه",
-                      change: { value: 12.2, type: "increase" },
-                      glowColor: "blue",
-                    },
-                    {
-                      title: "شاخص خودآگاهی",
-                      value: "74%",
-                      change: { value: 3.1, type: "increase" },
-                      glowColor: "pink",
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-          )}
+{messages.length === 0 && (
+    <section className="mt-15 w-full flex justify-center">
+      <div className="w-full max-w-4xl mx-auto px-6 md: px-20">
+
+
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 w-full px-5 items-stretch"> {/* items-stretch برای کشیدن ارتفاع */}
+          <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]"> {/* scale درست شد، min-h اضافه شد */}
+            <StatsGrid 
+              stats={[
+                {
+                  title: "شاخص خودآگاهی",
+                  value: "74%",
+                  change: { value: 3.1, type: "increase" },
+                  glowColor: "pink",
+                },
+              ]}
+            />  
+          </div>
+          <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]">
+            <StockTickerWidget
+              symbol="شاخص خودآگاهی"
+              name="Emotional Growth Index"
+              price={78.4}
+              change={+2.3}
+              changePercent={3.1}
+              chartData={[62, 65, 68, 70, 72, 75, 78]}
+            />
+          </div>
+          <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]" >
+            <CurrentWeatherWidget
+              temperature="آرام"
+              location="وضعیت احساسی امروز"
+              condition="s"
+            />
+          </div>
+        </div>
+
+    </div>
+  </section>
+)}
 
 
 
-        <section className="w-full flex justify-center mt-auto mb-8 z-10">
-          <div className="w-full max-w-3xl max-h-xl ">
+
+        <section className="flex-shrink-0 pb-4">
+          <div className="max-w-3xl mx-auto w-full">
             <ChatContainer messages={messages} setMessages={setMessages} />
           </div>
         </section>

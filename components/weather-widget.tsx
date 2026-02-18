@@ -72,7 +72,7 @@ function WeatherWidget({
             <Icon className="w-8 h-8 text-white" />
           </div>
           <div>
-            <div className="text-4xl font-light text-white">{temperature}°</div>
+            <div className="text-4xl font-light text-white">{temperature}</div>
             <div className="text-white/70 text-sm">{condition}</div>
           </div>
         </div>
@@ -83,8 +83,8 @@ function WeatherWidget({
 
 interface CurrentWeatherWidgetProps {
   location: string;
-  temperature: number;
-  feelsLike?: number;
+  temperature: string;
+  feelsLike?: string;
   high?: number;
   low?: number;
   condition?: WeatherCondition;
@@ -126,24 +126,24 @@ function CurrentWeatherWidget({
         <div>
           <div className="text-white font-medium">{location}</div>
           {feelsLike !== undefined && (
-            <div className="text-white/50 text-sm">Feels like {feelsLike}°</div>
+            <div className="text-white/50 text-sm">Feels like {feelsLike}</div>
           )}
         </div>
         <WeatherIcon condition={condition} className="w-8 h-8" />
       </div>
 
-      <div className="text-5xl font-light text-white mb-2">{temperature}°</div>
+      <div className="text-5xl font-light text-white mb-2">{temperature}</div>
 
       <div className="text-white/60 text-sm mb-3">{conditionText[condition]}</div>
 
       <div className="flex items-center gap-4 text-sm">
         {high !== undefined && (
           <span className="flex items-center gap-1 text-white/60">
-            <Thermometer className="w-3 h-3" /> H: {high}°
+            <Thermometer className="w-3 h-3" /> H: {high}
           </span>
         )}
         {low !== undefined && (
-          <span className="flex items-center gap-1 text-white/60">L: {low}°</span>
+          <span className="flex items-center gap-1 text-white/60">L: {low}</span>
         )}
       </div>
 
@@ -166,13 +166,13 @@ function CurrentWeatherWidget({
 }
 
 interface DetailedWeatherWidgetProps {
-  temperature: number;
+  temperature: string;
   condition: string;
   icon?: "sun" | "cloud" | "rain" | "snow" | "wind";
   location?: string;
   humidity?: number;
   windSpeed?: number;
-  feelsLike?: number;
+  feelsLike?: string;
   className?: string;
 }
 
@@ -212,7 +212,7 @@ function DetailedWeatherWidget({
             <Icon className="size-10 text-white" />
           </div>
           <div>
-            <div className="text-5xl font-light text-white mb-1">{temperature}°</div>
+            <div className="text-2xl font-light text-white mb-1">{temperature}</div>
             <div className="text-white/70 text-base">{condition}</div>
             {feelsLike && <div className="text-white/50 text-xs mt-1">Feels like {feelsLike}°</div>}
           </div>
@@ -285,7 +285,7 @@ function ForecastWeatherWidget({
           <CurrentIcon className="w-10 h-10 text-white" />
         </div>
         <div>
-          <div className="text-4xl font-light text-white mb-1">{current.temperature}°</div>
+          <div className="text-4xl font-light text-white mb-1">{current.temperature}</div>
           <div className="text-white/70 text-sm">{current.condition}</div>
         </div>
       </div>
@@ -363,7 +363,7 @@ function HourlyWeatherWidget({ hours, className }: HourlyWeatherWidgetProps) {
                   style={{ height: `${Math.max(height, 10)}%` }}
                 />
                 <div className="absolute -top-6 text-white text-xs font-medium">
-                  {hour.temperature}°
+                  {hour.temperature}
                 </div>
               </div>
               <Icon className="w-4 h-4 text-white/70" />
@@ -400,7 +400,7 @@ function ForecastWidget({ forecast = [], className }: ForecastWidgetProps) {
                   style={{ width: `${((day.high - day.low) / 20) * 100}%` }}
                 />
               </div>
-              <span className="text-white tabular-nums">{day.high}°</span>
+              <span className="text-white tabular-nums">{day.high}</span>
             </div>
           </div>
         ))}
