@@ -38,9 +38,9 @@ const glassButtonVariants = cva(
         ),
         ghost: cn("bg-transparent text-white/70", "hover:bg-white/10 hover:text-white"),
         destructive: cn(
-          "bg-red-500/30 backdrop-blur-xl border border-red-400/40 text-red-100",
+          "bg-cyan-500/30 backdrop-blur-xl border border-cyan-400/40 text-red-100",
           "shadow-[0_4px_16px_rgba(239,68,68,0.3)]",
-          "hover:bg-red-500/40 hover:border-red-400/60",
+          "hover:bg-green-500/40 hover:border-green-400/60",
           "before:absolute before:inset-0 before:rounded-xl",
           "before:bg-linear-to-b before:from-white/10 before:to-transparent before:pointer-events-none",
         ),

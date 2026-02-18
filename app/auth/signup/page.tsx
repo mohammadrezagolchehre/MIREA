@@ -8,6 +8,7 @@ import { GlassButton } from "@/components/ui/glass-button"
 import { GlassCheckbox } from "@/components/glass-checkbox"
 import { Label } from "@radix-ui/react-label"
 import { useRouter } from "next/navigation"
+import Grainient from "@/components/Grainient"
 
 interface ValidationRules {
   minLength: boolean
@@ -53,8 +54,19 @@ export default function SignupPageBlock() {
   }
 
   return (
-    <div className="min-h-screen py-4 flex items-center justify-center liora-bg px-4 sm:px-6 md:px-12 lg:px-40">
-
+    <div className="min-h-screen py-4 flex items-center justify-center  px-4 sm:px-6 md:px-12 lg:px-40">
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <Grainient
+          color1="FF4F9A"      
+          color2="FDF9FF"     
+          color3="2B3FFF"     
+          timeSpeed={0.15}    
+          grainAmount={0.05}   
+          warpStrength={0.8}  
+          zoom={1.0}
+          className="w-full h-full trans"
+        />
+      </div>
 
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">

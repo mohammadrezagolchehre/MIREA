@@ -9,6 +9,7 @@ import { Label } from "@radix-ui/react-label"
 import { useRouter } from "next/navigation"
 import Grainient from "@/components/Grainient";
 
+
 export default function LoginPageBlock() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -30,17 +31,17 @@ export default function LoginPageBlock() {
 
       <div className="fixed inset-0 -z-10 pointer-events-none">
         <Grainient
-          color1="DDAED3"      
-          color2="F1E6C9"     
-          color3="B0FFFA"      
+          color1="FF4F9A"      
+          color2="FDF9FF"     
+          color3="2B3FFF"     
           timeSpeed={0.15}    
           grainAmount={0.05}   
           warpStrength={0.8}  
           zoom={1.0}
-          className="w-full h-full"
+          className="w-full h-full trans"
         />
       </div>
-
+      
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-2">
