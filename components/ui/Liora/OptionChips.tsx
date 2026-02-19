@@ -18,8 +18,9 @@ export default function OptionChips({ onSelect }: Props) {
     <div className="flex flex-wrap gap-3 justify-center mt-6">
       {options.map((option) => (
         <GlassButton
+          className="text-white"
           key={option}
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={() => onSelect(option)}
 

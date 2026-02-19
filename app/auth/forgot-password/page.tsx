@@ -30,19 +30,7 @@ export default function ForgotPasswordPageBlock() {
   return (
     <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40">
 
-          
-      <div className="fixed inset-0 -z-10 bg-black/30 backdrop-blur-[2px]">
-        <Grainient
-          color1="9F1F56"      
-          color2="E4D5FF"     
-          color3="1420A6"     
-          timeSpeed={0.15}    
-          grainAmount={0.02}   
-          warpStrength={0.8}  
-          zoom={1.0}
-          className="w-full h-full trans"
-        />
-      </div>
+
       <GlassCard className="w-full max-w-md">
         {!isSubmitted ? (
           <>
@@ -53,7 +41,7 @@ export default function ForgotPasswordPageBlock() {
                 </div>
               </div>
               <GlassCardTitle className="text-2xl">بازیابی رمز عبور</GlassCardTitle>
-              <GlassCardDescription className="text-black/65">
+              <GlassCardDescription className="text-white/65">
                 مشکلی در ورود دارید؟ ایمیل خود را وارد کنید تا لینک بازیابی رمز عبور برای شما ارسال شود.
               </GlassCardDescription>
             </GlassCardHeader>
@@ -62,7 +50,7 @@ export default function ForgotPasswordPageBlock() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Email Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-black/65 text-right" dir="rtl">
+                  <Label htmlFor="email" className="text-white/65 text-right" dir="rtl">
                     آدرس ایمیل شما
                   </Label>
                   <GlassInput
@@ -74,7 +62,7 @@ export default function ForgotPasswordPageBlock() {
                     required
                     className="bg-white/5"
                   />
-                  <p className="text-xs text-black/65 mt-1 text-right" dir="rtl">
+                  <p className="text-xs text-white/65 mt-1 text-right" dir="rtl">
                     مطمئن شوید که ایمیل وارد شده صحیح است و به آن دسترسی دارید، زیرا لینک بازیابی به این آدرس ارسال خواهد شد.
                   </p>
                 </div>
@@ -115,9 +103,9 @@ export default function ForgotPasswordPageBlock() {
                 </div>
               </div>
               <GlassCardTitle className="text-2xl">ایمیل های خود را چک کنید</GlassCardTitle>
-              <GlassCardDescription className="text-black/65 " >
+              <GlassCardDescription className="text-white/65 " >
                 ما ایمیل بازیابی رمز عبورتان را برایتان ارسال کردیم{" "}
-                <span className="font-medium text-black/65 justify-center" >{email}</span>
+                <span className="font-medium text-white/65 justify-center" >{email}</span>
               </GlassCardDescription>
             </GlassCardHeader>
 

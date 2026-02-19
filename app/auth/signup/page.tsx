@@ -56,18 +56,6 @@ export default function SignupPageBlock() {
   return (
     <div className="min-h-screen py-4 flex items-center justify-center  px-4 sm:px-6 md:px-12 lg:px-40">
     
-      <div className="fixed inset-0 -z-10 bg-black/30 backdrop-blur-[2px]">
-        <Grainient
-          color1="9F1F56"      
-          color2="E4D5FF"     
-          color3="1420A6"     
-          timeSpeed={0.15}    
-          grainAmount={0.02}   
-          warpStrength={0.8}  
-          zoom={1.0}
-          className="w-full h-full trans"
-        />
-      </div>
 
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
@@ -77,7 +65,7 @@ export default function SignupPageBlock() {
             </div>
           </div>
           <GlassCardTitle className="text-2xl">ساخت حساب کاربری</GlassCardTitle>
-          <GlassCardDescription className="text-black/65" dir="rtl">یه چیزی مینویسم اینجا!</GlassCardDescription>
+          <GlassCardDescription className="text-white/65" dir="rtl">یه چیزی مینویسم اینجا!</GlassCardDescription>
         </GlassCardHeader>
 
         <GlassCardContent>
@@ -85,7 +73,7 @@ export default function SignupPageBlock() {
             {/* Name Fields */}
             <div dir="rtl" className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-black/65">
+                <Label htmlFor="lastName" className="text-white/65">
                   نام
                 </Label>
                 <GlassInput
@@ -99,7 +87,7 @@ export default function SignupPageBlock() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-black/65">
+                <Label htmlFor="firstName" className="text-white/65">
                   نام خانوادگی
                 </Label>
                 <GlassInput
@@ -116,7 +104,7 @@ export default function SignupPageBlock() {
 
             {/* Email Input */}
             <div dir="rtl"className="space-y-2">
-              <Label htmlFor="email" className="text-black/65">
+              <Label htmlFor="email" className="text-white/65">
                 آدرس ایمیل
               </Label>
               <GlassInput
@@ -132,7 +120,7 @@ export default function SignupPageBlock() {
 
             {/* Password Input */}
             <div dir="rtl" className="space-y-2">
-              <Label htmlFor="password" className="text-black/65">
+              <Label htmlFor="password" className="text-white/65">
                 رمز عبور
               </Label>
               <div className="relative">
@@ -183,7 +171,7 @@ export default function SignupPageBlock() {
 
             {/* Confirm Password */}
             <div dir="rtl" className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-black/65">
+              <Label htmlFor="confirmPassword" className="text-white/65">
                 تکرار رمز عبور
               </Label>
               <div className="relative">
@@ -219,7 +207,7 @@ export default function SignupPageBlock() {
                   setAgreeToTerms(checked)
                 }
               }} />
-              <Label htmlFor="terms" className="text-black/65 cursor-pointer text-sm leading-tight">
+              <Label htmlFor="terms" className="text-white/65 cursor-pointer text-sm leading-tight">
                 I agree to the{" "}
                 <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
                   Terms of Service
@@ -252,7 +240,7 @@ export default function SignupPageBlock() {
             </GlassButton>
 
             {/* Sign In Link */}
-            <p className="text-center text-sm text-black/65" dir="rtl">
+            <p className="text-center text-sm text-white/65" dir="rtl">
               از قبل ثبت نام کرده اید؟{" "}
               <a onClick={() => router.push("/auth/login")} className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
                 Sign in

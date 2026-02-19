@@ -68,7 +68,7 @@ function WeatherWidget({
       {location && <div className="text-white/60 text-sm mb-2">{location}</div>}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-white/10">
+          <div className="p-2 rounded-xl">
             <Icon className="w-8 h-8 text-white" />
           </div>
           <div>
@@ -376,7 +376,7 @@ function HourlyWeatherWidget({ hours, className }: HourlyWeatherWidgetProps) {
   );
 }
 
-// ForecastDay interface is declared earlier with WeatherCondition for `condition`
+
 
 interface ForecastWidgetProps {
   forecast?: ForecastDay[];

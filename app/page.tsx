@@ -10,7 +10,7 @@ import { CurrentWeatherWidget } from "@/components/weather-widget";
 import { StatsGrid } from "@/components/stats-widget";
 import { Users } from "lucide-react";
 import GradientText from "@/components/ui/GradiantText";
-import OptionChips from "@/components/ui/Liora/OptionChips";
+
 import { StockTickerWidget } from "@/components/stock-widget";
 
 
@@ -27,22 +27,6 @@ export default function Home() {
   return (
     <div className="relative min-h-screen isolate">
 
-          
-
-      <div className="fixed inset-0 -z-20 pointer-events-none">
-        <Grainient
-          color1="FF52A0"
-          color2="E4D5FF"
-          color3="1420A6"
-          timeSpeed={0.15}
-          grainAmount={0.02}
-          warpStrength={0.8}
-          zoom={1.0}
-          className="w-full h-full"
-        />
-      </div>
-
-
       <div className="fixed inset-0 -z-10 bg-black/30 pointer-events-none" />
 
 
@@ -54,8 +38,9 @@ export default function Home() {
           </GlassButton>
 
           <GlassButton
-            variant="default"
+            variant="outline"
             onClick={() => router.push("./auth/login")}
+            className="text-white"
           >
             ورود
           </GlassButton>
@@ -73,14 +58,15 @@ export default function Home() {
           <section className="w-full max-w-5xl mx-auto flex flex-col items-center gap-10 py-10">
             <div className="text-center space-y-3">
             <div className="text-3xl md:text-4xl font-bold text-white">
-              Hello, I am{" "}
+             سلام من{" "}
               <GradientText
-                text="Liora"
+                text="لیورا"
               />
+              هستم
             </div>
 
             <div className="text-lg md:text-xl text-white/80">
-              Your AI companion for your emotions.
+              دستیار عواطف و احساسات شما 
             </div>
             </div>
           </section>
@@ -121,7 +107,6 @@ export default function Home() {
             <CurrentWeatherWidget
               temperature="آرام"
               location="وضعیت احساسی امروز"
-              condition="s"
             />
           </div>
         </div>

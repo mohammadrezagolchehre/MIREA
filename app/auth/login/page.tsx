@@ -29,19 +29,7 @@ export default function LoginPageBlock() {
   return (
     <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40">
 
-    
-      <div className="fixed inset-0 -z-10 bg-black/30 backdrop-blur-[2px]">
-        <Grainient
-          color1="9F1F56"      
-          color2="E4D5FF"     
-          color3="1420A6"     
-          timeSpeed={0.15}    
-          grainAmount={0.02}   
-          warpStrength={0.8}  
-          zoom={1.0}
-          className="w-full h-full trans"
-        />
-      </div>
+
       
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
@@ -50,15 +38,15 @@ export default function LoginPageBlock() {
               <LogIn className="h-6 w-6 text-white" />
             </div>
           </div>
-          <GlassCardTitle className="text-xl text-black">خوش آمدید</GlassCardTitle>
-          <GlassCardDescription className="text-black">برای ادامه به حساب کاربری خود وارد شوید</GlassCardDescription>
+          <GlassCardTitle className="text-xl text-white">خوش آمدید</GlassCardTitle>
+          <GlassCardDescription className="text-white">برای ادامه به حساب کاربری خود وارد شوید</GlassCardDescription>
         </GlassCardHeader>
 
         <GlassCardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
             <div dir="rtl" className="space-y-2">
-              <Label htmlFor="email" className="text-black/65" >
+              <Label htmlFor="email" className="text-white/65" >
                 آدرس ایمیل
               </Label>
               <GlassInput
@@ -75,7 +63,7 @@ export default function LoginPageBlock() {
             {/* Password Input */}
             <div dir="rtl" className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-black/65 text-right ">
+                <Label htmlFor="password" className="text-white/65 text-right ">
                   رمز عبور
                 </Label>
                           

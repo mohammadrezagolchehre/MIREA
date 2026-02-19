@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Vazirmatn } from "next/font/google";
+import Background from "@/components/ui/background";
 
 const vazir = Vazirmatn({
   subsets: ["arabic"],
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body
         className={vazir.className}
       >
+        <Background/>
         {children}
       </body>
     </html>
