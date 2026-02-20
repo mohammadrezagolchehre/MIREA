@@ -41,7 +41,7 @@ function StatCard({
 
   return (
     <GlassWidgetBase
-      className={cn("min-w-48", className)}
+      className={cn("min-w-50 min-h-45 ml-5", className)}
       size="md"
       glowColor={glowColor}
     >

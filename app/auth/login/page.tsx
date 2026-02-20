@@ -27,14 +27,14 @@ export default function LoginPageBlock() {
   }
 
   return (
-    <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40">
+    <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40 ">
 
 
       
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-lg bg-linear-to-br from-cyan-400 to-blue-500">
+            <div className="p-2 rounded-lg bg-linear-to-br from-cyan-200 to-blue-500">
               <LogIn className="h-6 w-6 text-white" />
             </div>
           </div>

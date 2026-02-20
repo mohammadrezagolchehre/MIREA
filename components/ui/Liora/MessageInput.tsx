@@ -41,7 +41,7 @@ export default function MessageInput({ onSend }: MessageInputProps) {
       />
 
       <GlassButton
-        variant={hasText ? "primary" : "default"}
+        variant={hasText ? "default" : "outline"}
         size="icon"
         onClick={handleSend}
         disabled={!hasText}

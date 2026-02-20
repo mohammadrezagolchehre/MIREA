@@ -11,30 +11,30 @@ const glassButtonVariants = cva(
     "text-sm font-medium transition-all duration-300 ease-out",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
     "disabled:pointer-events-none disabled:opacity-50",
-    "hover:scale-105 active:scale-95",
+    "hover:scale-[1.02] active:scale-[0.98]" ,
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   ),
   {
     variants: {
       variant: {
         default: cn(
-          "bg-white/20 backdrop-blur-xl border border-white/30 text-black",
-          "shadow-[0_4px_10px_rgba(0,0,0,0.2)]",
-          "hover:bg-white/30 hover:border-white/40",
+          "bg-white/5 backdrop-blur-xl border border-white/10 text-white/90",
+          "shadow-[0_6px_24px_rgba(0,0,0,0.25)]",
+          "hover:bg-white/10 hover:border-white/20",
           "before:absolute before:inset-0 before:rounded-xl",
           "before:bg-linear-to-b before:from-white/20 before:to-transparent before:pointer-events-none",
         ),
         primary: cn(
-          "bg-linear-to-r from-blue-500/80 via-blue-500/80 to-cyan-500/80",
-          "backdrop-blur-xl border border-white/30 text-white",
-          "shadow-[0_4px_30px_rgba(59,,246,0.4)]",
-          "hover:shadow-[0_4px_30px_rgba(59,130,246,0.6)]",
+          "bg-gradient-to-r from-[#8C86FF]/70 to-[#6CA7FF]/70",
+          "backdrop-blur-xl border border-white/15 text-white",
+          "shadow-[0_8px_30px_rgba(140,134,255,0.25)]",
+          "hover:shadow-[0_10px_40px_rgba(140,134,255,0.35)]",
           "before:absolute before:inset-0 before:rounded-xl",
           "before:bg-linear-to-b before:from-white/30 before:to-transparent before:pointer-events-none",
         ),
         outline: cn(
-          "bg-transparent backdrop-blur-sm border-2 border-white/40 text-white",
-          "hover:bg-white/10 hover:border-white/60",
+          "bg-white/3 backdrop-blur-md border border-white/15 text-white/80",
+          "hover:bg-white/8 hover:border-white/25",
         ),
         ghost: cn("bg-transparent text-white/70", "hover:bg-white/10 hover:text-white"),
         destructive: cn(
@@ -44,6 +44,12 @@ const glassButtonVariants = cva(
           "before:absolute before:inset-0 before:rounded-xl",
           "before:bg-linear-to-b before:from-white/10 before:to-transparent before:pointer-events-none",
         ),
+        subscription: cn(
+          "bg-gradient-to-r from-[#8C86FF]/30 to-[#6CA7FF]/30",
+          "border border-white/15 text-white",
+          "shadow-[0_6px_20px_rgba(124,140,255,0.25)]",
+          "hover:from-[#8C86FF]/40 hover:to-[#6CA7FF]/40",
+      ),
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -72,7 +78,7 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
     return (
       <div className="relative inline-block">
         {glowEffect && (
-          <div className="absolute -inset-1 rounded-xl bg-linear-to-r from-cyan-500/40 via-blue-500/40 to-purple-500/40 blur-lg opacity-70 transition-opacity group-hover:opacity-100" />
+          <div className="bg-gradient-to-r from-[#8C86FF]/30 via-[#6CA7FF]/30 to-[#F3A6FF]/30 blur-2xl opacity-60" />
         )}
         <Comp className={cn(glassButtonVariants({ variant, size, className }))} ref={ref} {...props}>
           <span className="relative z-10 flex items-center gap-2">{children}</span>

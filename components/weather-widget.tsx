@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Cloud, CloudRain, Sun, CloudSnow, Wind, Droplets, Thermometer, Moon } from "lucide-react";
 import { GlassWidgetBase } from "./ui/base-widget";
+import { Icon } from "lucide-react";
 
 type WeatherCondition = "sunny" | "cloudy" | "rainy" | "snowy" | "night" | "night-cloudy";
 
@@ -73,8 +74,7 @@ function WeatherWidget({
           </div>
           <div>
             <div className="text-4xl font-light text-white">{temperature}</div>
-            <div className="text-white/70 text-sm">{condition}</div>
-          </div>
+            </div>
         </div>
       </div>
     </GlassWidgetBase>
@@ -121,8 +121,8 @@ function CurrentWeatherWidget({
       : "cyan";
 
   return (
-    <GlassWidgetBase className={cn("min-w-50", className)} glowColor={glowColor}>
-      <div className="flex items-start justify-between mb-3">
+    <GlassWidgetBase className={cn("min-w-50 min-h-45", className)} glowColor={glowColor}>
+      <div className="flex items-start justify-between mb-3 ">
         <div>
           <div className="text-white font-medium">{location}</div>
           {feelsLike !== undefined && (
@@ -133,8 +133,6 @@ function CurrentWeatherWidget({
       </div>
 
       <div className="text-5xl font-light text-white mb-2">{temperature}</div>
-
-      <div className="text-white/60 text-sm mb-3">{conditionText[condition]}</div>
 
       <div className="flex items-center gap-4 text-sm">
         {high !== undefined && (
