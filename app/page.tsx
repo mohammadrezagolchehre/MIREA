@@ -10,7 +10,7 @@ import { CurrentWeatherWidget } from "@/components/weather-widget";
 import { StatsGrid } from "@/components/stats-widget";
 import { Users } from "lucide-react";
 import GradientText from "@/components/ui/GradiantText";
-
+import { GlassSeparator } from "@/components/glass-separator";
 import { StockTickerWidget } from "@/components/stock-widget";
 
 
@@ -23,10 +23,10 @@ export default function Home() {
     text: string;
   };
 
-  const isLoggedIn = false; 
+  const isLoggedIn = true; 
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
-  const hasData = messages.length > 0;
+  const hasData = true;
 
   return (
     <div className="relative min-h-screen isolate">
@@ -59,7 +59,7 @@ export default function Home() {
         </header>
         <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto">
         {messages.length === 0 && (
-          <section className="w-full max-w-5xl mx-auto flex flex-col items-center gap-10 py-10">
+          <section className="w-full max-w-5xl mx-auto flex flex-col items-center gap-10 pr-5 py-10">
             <div className="text-center space-y-3">
             <div className="text-3xl md:text-5xl font-bold text-white">
              سلام من{" "}
@@ -78,6 +78,27 @@ export default function Home() {
           
         )}
         </div>
+    {messages.length === -1 &&(
+    <div dir="rtl" className="max-w-2xl mx-auto w-full text-white/80 mb-4 px-4">
+
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">شروع همراهی با لیورا</h3>
+        <p className="text-white/50 text-sm">
+          اینجا جاییه که میتونی بدون نگرانی حرف بزنی.
+        </p>
+      </div>
+
+      <GlassSeparator className="my-6" />
+
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">آماده‌ای شروع کنیم؟</h3>
+        <p className="text-white/50 text-sm">
+          فقط اولین جمله‌تو بنویس. ادامه‌ش با من.
+        </p>
+      </div>
+
+    </div>
+)}
     {isLoggedIn && hasData &&  messages.length === 0 && (
         <section className="mt-15 w-full flex justify-center">
           <div className="w-full max-w-4xl mx-auto px-6 md: px-20">

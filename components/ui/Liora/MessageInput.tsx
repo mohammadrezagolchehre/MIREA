@@ -45,7 +45,7 @@ export default function MessageInput({ onSend }: MessageInputProps) {
         size="icon"
         onClick={handleSend}
         disabled={!hasText}
-        className="absolute left-3 bottom-9 transition-all "
+        className="absolute left-3 bottom-9 transition-all  "
       >
         <CornerLeftUp size={18} />
       </GlassButton>
