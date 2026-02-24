@@ -1,4 +1,5 @@
 'use client';
+import TypewriterText from "./TypewriterText";
 
 type Message = {
   id: string;
@@ -37,7 +38,11 @@ export default function MessageBubble({ message }: { message: Message }) {
         }
       `}
     >
-      {message.text}
+      {isUser ? (
+        message.text
+      ) : (
+        <TypewriterText text={message.text} speed={30} />
+      )}
     </div>
   );
 }

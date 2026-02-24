@@ -23,7 +23,7 @@ export default function Home() {
     text: string;
   };
 
-  const isLoggedIn = true; 
+  const isLoggedIn = false; 
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const hasData = true;
@@ -34,8 +34,8 @@ export default function Home() {
       <div className="fixed inset-0 -z-10 bg-black/30 pointer-events-none" />
 
 
-      <main className="relative h-[100dvh] flex flex-col overflow-hidden px-4">
-        <header className="absolute top-6 right-6 z-20 flex gap-3 jus">
+     <main className="relative h-dvh flex flex-col px-4">
+        <header className="absolute top-6 right-6 z-20 flex gap-3 ">
           <GlassButton className=" " variant="subscription"
           onClick={()=> router.push("./pricing")}>
             خرید اشتراک
@@ -78,7 +78,7 @@ export default function Home() {
           
         )}
         </div>
-    {messages.length === -1 &&(
+    {messages.length === 0 &&(
     <div dir="rtl" className="max-w-2xl mx-auto w-full text-white/80 mb-4 px-4">
 
       <div className="space-y-2">
@@ -143,11 +143,11 @@ export default function Home() {
 
 
 
-        <section className="flex-shrink-0 pb-4">
-          <div className="max-w-3xl mx-auto w-full">
-            <ChatContainer messages={messages} setMessages={setMessages} />
-          </div>
-        </section>
+    <section className="flex-1 flex pb-4 ">
+      <div className="max-w-3xl mx-auto w-full h-full ">
+        <ChatContainer messages={messages} setMessages={setMessages} />
+      </div>
+    </section>
 
 
       </main>

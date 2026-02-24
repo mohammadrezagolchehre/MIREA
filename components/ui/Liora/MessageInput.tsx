@@ -1,11 +1,9 @@
 'use client';
 
-
-import { useState,useEffect }from "react";
-import { ArrowUp, CornerLeftUp, LucideArrowBigUp } from "lucide-react";
-import { GlassTextarea } from "@/components/glass-textarea";
+import { useState, useRef, useEffect } from "react";
+import { CornerLeftUp } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
-import { Arrow } from "radix-ui/internal";
+import { GlassTextarea } from "@/components/glass-textarea";
 
 type MessageInputProps = {
   onSend: (text: string) => void;
@@ -13,8 +11,19 @@ type MessageInputProps = {
 
 export default function MessageInput({ onSend }: MessageInputProps) {
   const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const hasText = message.trim().length > 0;
+
+  // 🔥 Auto resize
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
+  }, [message]);
 
   const handleSend = () => {
     if (!hasText) return;
@@ -23,15 +32,21 @@ export default function MessageInput({ onSend }: MessageInputProps) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto relative">
+    <div className="relative w-full ">
 
       <GlassTextarea
+        ref={textareaRef}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        rows={2}
-        placeholder="اینجا برامون بنویس"
+        placeholder="اینجا برام بنویس..."
         autoFocus
-        className="pr-10 pl-16 pt-5 text-white"
+        rows={1}
+        className="
+          pr-4
+          pl-14
+          py-4
+          max-h-[140px]
+        "
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -45,7 +60,7 @@ export default function MessageInput({ onSend }: MessageInputProps) {
         size="icon"
         onClick={handleSend}
         disabled={!hasText}
-        className="absolute left-3 bottom-9 transition-all  "
+        className="absolute left-3 bottom-8 md:bottom-9.5 h-9 w-9"
       >
         <CornerLeftUp size={18} />
       </GlassButton>

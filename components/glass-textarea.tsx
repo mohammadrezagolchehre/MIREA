@@ -43,11 +43,11 @@ const GlassTextarea = React.forwardRef<HTMLTextAreaElement, GlassTextareaProps>(
           <textarea
             id={textareaId}
             className={cn(
-               "relative w-full rounded-2xl px-5 py-3 text-sm md:h-[64px] h-[52px]",
-              "bg-[rgba(255,255,255,0.04)] backdrop-blur-xl border border-[rgba(255,255,255,0.06)]",
+               "relative w-full rounded-2xl px-5 py-3 text-sm min-h-[52px] md:min-h-[64px]",
+              "bg-[rgba(255,255,255,0.04)] backdrop-blur-xl border border-white/5",
               "text-[#EFF3FB] placeholder:text-[#B8C0D8] text-right",
               "shadow-[0_6px_24px_rgba(2,6,23,0.45)]",
-              "transition-all duration-300 resize-none",
+              "transition-all duration-300 resize-none overflow-y-auto",
               "focus:outline-none focus:border-white/40 focus:bg-white/15",
               " focus:ring-offset-0",
               "disabled:cursor-not-allowed disabled:opacity-50",
