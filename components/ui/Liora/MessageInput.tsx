@@ -1,39 +1,43 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
-import { CornerLeftUp } from "lucide-react";
+import { CornerLeftUp, Square } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
 import { GlassTextarea } from "@/components/glass-textarea";
 
 type MessageInputProps = {
   onSend: (text: string) => void;
+  isStreaming: boolean;
+  onStop: () => void;
 };
 
-export default function MessageInput({ onSend }: MessageInputProps) {
+export default function MessageInput({
+  onSend,
+  isStreaming,
+  onStop,
+}: MessageInputProps) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const hasText = message.trim().length > 0;
 
-  // 🔥 Auto resize
+  // Auto resize
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-
 
     textarea.style.height = "auto";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
   }, [message]);
 
   const handleSend = () => {
-    if (!hasText) return;
+    if (!hasText || isStreaming) return;
     onSend(message);
     setMessage("");
   };
 
   return (
-    <div className="relative w-full ">
-
+    <div className="relative w-full">
       <GlassTextarea
         ref={textareaRef}
         value={message}
@@ -41,12 +45,8 @@ export default function MessageInput({ onSend }: MessageInputProps) {
         placeholder="اینجا برام بنویس..."
         autoFocus
         rows={1}
-        className="
-          pr-4
-          pl-14
-          py-4
-          max-h-[140px]
-        "
+        disabled={isStreaming}
+        className="pr-4 pl-14 py-4 max-h-[140px]"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -56,15 +56,30 @@ export default function MessageInput({ onSend }: MessageInputProps) {
       />
 
       <GlassButton
-        variant={hasText ? "default" : "outline"}
+        variant={
+          isStreaming
+            ? "outline"
+            : hasText
+            ? "default"
+            : "outline"
+        }
         size="icon"
-        onClick={handleSend}
-        disabled={!hasText}
+        onClick={() => {
+          if (isStreaming) {
+            onStop();
+          } else {
+            handleSend();
+          }
+        }}
+        disabled={!hasText && !isStreaming}
         className="absolute left-3 bottom-8 md:bottom-9.5 h-9 w-9"
       >
-        <CornerLeftUp size={18} />
+        {isStreaming ? (
+          <Square size={16} />
+        ) : (
+          <CornerLeftUp size={18} />
+        )}
       </GlassButton>
-
     </div>
   );
 }

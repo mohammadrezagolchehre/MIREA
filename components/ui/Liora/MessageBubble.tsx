@@ -1,5 +1,6 @@
 'use client';
-import TypewriterText from "./TypewriterText";
+
+import { Copy, Pencil } from "lucide-react";
 
 type Message = {
   id: string;
@@ -7,42 +8,55 @@ type Message = {
   text: string;
 };
 
-export default function MessageBubble({ message }: { message: Message }) {
+type Props = {
+  message: Message;
+};
+
+export default function MessageBubble({ message }: Props) {
   const isUser = message.role === "user";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.text);
+  };
 
   return (
     <div
       dir="rtl"
       className={`
-        max-w-[70%] px-4 py-3
+        group relative
+        max-w-[70%]
         rounded-2xl
-        break-words whitespace-pre-wrap
-        transition-all duration-300
         backdrop-blur-2xl
+        transition-all
         ${
           isUser
-            ? `
-              self-end
-              bg-white/15
-              border border-white/25
-              text-white
-              shadow-[0_10px_30px_rgba(140,134,255,0)]
-            `
-            : `
-              self-start
-              bg-white/8
-              border border-white/15
-              text-white/85
-              shadow-[0_8px_25px_rgba(0,0,0,0.2)]
-            `
+            ? "self-end bg-white/15 border border-white/25 text-white"
+            : "self-start bg-white/8 border border-white/15 text-white/85"
         }
       `}
     >
-      {isUser ? (
-        message.text
-      ) : (
-        <TypewriterText text={message.text} speed={30} />
-      )}
+      {/* متن */}
+      <div className="px-4 py-3 break-words whitespace-pre-wrap">
+        {message.text}
+      </div>
+
+      {/* دکمه‌ها پایین پیام */}
+      <div dir="rtl" className="px-3 pb-2">
+        <div className="hidden md:flex gap-3 opacity-0 group-hover:opacity-100 transition">
+          <button
+            onClick={handleCopy}
+            className="text-white/50 hover:text-white transition"
+          >
+            <Copy size={16} />
+          </button>
+
+          {isUser && (
+            <button className="text-white/50 hover:text-white transition">
+              <Pencil size={16} />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
