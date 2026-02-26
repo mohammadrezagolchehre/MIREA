@@ -63,7 +63,7 @@ export default function ChatContainer({ messages, setMessages }: Props) {
     for (let i = 0; i < words.length; i++) {
       if (stopRef.current) break;
 
-      await new Promise(res => setTimeout(res, 140)); // سرعت نرم‌تر
+      await new Promise(res => setTimeout(res, 140)); 
 
       current += (i === 0 ? "" : " ") + words[i];
 
@@ -80,7 +80,7 @@ export default function ChatContainer({ messages, setMessages }: Props) {
   return (
     <div className="flex flex-col h-full">
 
-      {/* لیست پیام‌ها */}
+      
       <div
         className={`flex-1 overflow-y-auto px-4 ${
           messages.length ? "pb-32" : "pb-4"
@@ -90,7 +90,7 @@ export default function ChatContainer({ messages, setMessages }: Props) {
         <div ref={bottomRef} />
       </div>
 
-      {/* اینپوت */}
+     
       <div className="sticky bottom-0 left-0 w-full p-4 shrink-0">
         {messages.length === 0 && (
           <div className="mb-4">

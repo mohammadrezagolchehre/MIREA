@@ -60,7 +60,7 @@ export default function SignupPageBlock() {
       <GlassCard className="w-full max-w-md">
         <GlassCardHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-2">
-            <div className="p-2 rounded-lg bg-linear-to-br from-green-400 to-emerald-500">
+            <div className="p-2 rounded-xl bg-white/10 border border-white/20 backdrop-blur-xl">
               <UserPlus className="h-6 w-6 text-white" />
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function SignupPageBlock() {
         <GlassCardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Fields */}
-            <div dir="rtl" className="grid grid-cols-2 gap-3">
+            <div dir="rtl" className="grid grid-cols-2 gap-3 ">
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="text-white/65">
                   نام
@@ -131,7 +131,7 @@ export default function SignupPageBlock() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-white/5 pr-10"
+                  className="bg-white/5 pr-10 text-white/65"
                 />
                 <button
                   type="button"
@@ -144,7 +144,7 @@ export default function SignupPageBlock() {
               {/* Password Strength Indicator */}
               {password.length > 0 && (
                 <div className="space-y-2 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <p className="text-xs font-medium text-black/60 mb-2" dir="rtl">رمز عبور باید شامل:</p>
+                  <p className="text-xs font-medium text-white/60 mb-2" dir="rtl">رمز عبور باید شامل:</p>
                   <div className="grid grid-cols-2 gap-1.5" dir="rtl">
                     {[
                       { key: "minLength", label: "بیشتر از 8 کاراکتر" },
@@ -155,10 +155,10 @@ export default function SignupPageBlock() {
                     ].map((rule) => (
                       <div key={rule.key} className="flex items-center gap-1.5">
                         <div className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                          validation[rule.key as keyof ValidationRules] ? "bg-green-400" : "bg-white/20"
+                          validation[rule.key as keyof ValidationRules] ? "text-[#6EE7B7]" : "bg-white/20"
                         }`} />
                         <span className={`text-xs transition-colors ${
-                          validation[rule.key as keyof ValidationRules] ? "text-green-400" : "text-black/65"
+                          validation[rule.key as keyof ValidationRules] ? "text-[#6EE7B7]" : "text-white/65"
                         }`}>
                           {rule.label}
                         </span>
@@ -183,7 +183,7 @@ export default function SignupPageBlock() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={!isPasswordValid}
-                  className="bg-white/5 pr-10 disabled:opacity-50"
+                  className="bg-white/5 text-white pr-10 disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -209,11 +209,11 @@ export default function SignupPageBlock() {
               }} />
               <Label htmlFor="terms" className="text-white/65 cursor-pointer text-sm leading-tight">
                 I agree to the{" "}
-                <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+                <a href="#" className="text-[#8C86FF] hover:text-[#A29BFF]">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+                <a href="#" className="text-[#8C86FF] hover:text-[#A29BFF]">
                   Privacy Policy
                 </a>
               </Label>

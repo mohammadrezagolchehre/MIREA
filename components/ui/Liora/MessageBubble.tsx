@@ -24,7 +24,7 @@ export default function MessageBubble({ message }: Props) {
       dir="rtl"
       className={`
         group relative
-        max-w-[70%]
+        max-w-[90%]
         rounded-2xl
         backdrop-blur-2xl
         transition-all
@@ -35,12 +35,12 @@ export default function MessageBubble({ message }: Props) {
         }
       `}
     >
-      {/* متن */}
+      
       <div className="px-4 py-3 break-words whitespace-pre-wrap">
         {message.text}
       </div>
 
-      {/* دکمه‌ها پایین پیام */}
+      
       <div dir="rtl" className="px-3 pb-2">
         <div className="hidden md:flex gap-3 opacity-0 group-hover:opacity-100 transition">
           <button

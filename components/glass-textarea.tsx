@@ -16,7 +16,7 @@ const GlassTextarea = React.forwardRef<HTMLTextAreaElement, GlassTextareaProps>(
     const errorId = `${textareaId}-error`
 
     return (
-      <div className="relative w-full">
+      <div className="relative rounded-2xl overflow-hidden overflow-y-hidden">
         {label && (
           <motion.label
             htmlFor={textareaId}
@@ -44,9 +44,10 @@ const GlassTextarea = React.forwardRef<HTMLTextAreaElement, GlassTextareaProps>(
             id={textareaId}
             className={cn(
                "relative w-full rounded-2xl px-5 py-3 text-sm min-h-[52px] md:min-h-[64px]",
+               "custom-scroll w-full h-full",
               "bg-[rgba(255,255,255,0.04)] backdrop-blur-xl border border-white/5",
               "text-[#EFF3FB] placeholder:text-[#B8C0D8] text-right",
-              "shadow-[0_6px_24px_rgba(2,6,23,0.45)]",
+              "shadow-[0_6px_24px_rgba(2,6,23,0.25)]",
               "transition-all duration-300 resize-none overflow-y-auto",
               "focus:outline-none focus:border-white/40 focus:bg-white/15",
               " focus:ring-offset-0",
