@@ -4,27 +4,26 @@ import OptionChips from "./OptionChips";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 import { useEffect, useRef, useState } from "react";
-
-type Message = {
-  id: string;
-  role: "user" | "ai";
-  text: string;
-};
+import { Message } from "../../../app/types/message";
 
 type Props = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 };
 
-export default function ChatContainer({ messages, setMessages }: Props) {
+export default function ChatContainer({
+  messages,
+  setMessages,
+}: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const stopRef = useRef(false);
 
   const [isStreaming, setIsStreaming] = useState(false);
 
-  // 🔽 اسکرول به آخر
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const handleStop = () => {
@@ -40,57 +39,89 @@ export default function ChatContainer({ messages, setMessages }: Props) {
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: "user",
-      text,
+      content: text,
+      createdAt: new Date().toISOString(),
+      status: "completed",
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
     const aiId = crypto.randomUUID();
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
-      { id: aiId, role: "ai", text: "" },
+      {
+        id: aiId,
+        role: "assistant",
+        content: "",
+        createdAt: new Date().toISOString(),
+        status: "streaming",
+      },
     ]);
 
     setIsStreaming(true);
 
-    const fullText =
-      "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.";
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: text,
+        }),
+      });
 
-    const words = fullText.split(" ");
-    let current = "";
+      if (!response.ok) {
+        throw new Error("API Error");
+      }
 
-    for (let i = 0; i < words.length; i++) {
-      if (stopRef.current) break;
+      const data = await response.json();
 
-      await new Promise(res => setTimeout(res, 140)); 
-
-      current += (i === 0 ? "" : " ") + words[i];
-
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === aiId ? { ...m, text: current } : m
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiId
+            ? {
+                ...m,
+                content: data.response,
+                status: "completed",
+              }
+            : m
         )
       );
-    }
+    } catch (error) {
+      console.error(error);
 
-    setIsStreaming(false);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiId
+            ? {
+                ...m,
+                content: "خطا در دریافت پاسخ",
+                status: "error",
+              }
+            : m
+        )
+      );
+    } finally {
+      setIsStreaming(false);
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
-
-      
       <div
         className={`flex-1 overflow-y-auto px-4 ${
           messages.length ? "pb-32" : "pb-4"
         }`}
       >
-        <MessageList messages={messages} />
+        <MessageList
+          messages={messages}
+        />
+
         <div ref={bottomRef} />
       </div>
 
-     
       <div className="sticky bottom-0 left-0 w-full p-4 shrink-0">
         {messages.length === 0 && (
           <div className="mb-4">

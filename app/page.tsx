@@ -12,16 +12,9 @@ import { Users } from "lucide-react";
 import GradientText from "@/components/ui/GradiantText";
 import { GlassSeparator } from "@/components/glass-separator";
 import { StockTickerWidget } from "@/components/stock-widget";
+import {Message} from "../app/types/message";
 
-
-
-
-export default function Home() {
-  type Message = {
-    id: string;
-    role: "user" | "ai";
-    text: string;
-  };
+export default function Home(){
 
   const isLoggedIn = false; 
   const router = useRouter();

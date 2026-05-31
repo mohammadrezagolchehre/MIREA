@@ -1,12 +1,7 @@
 'use client';
 
 import { Copy, Pencil } from "lucide-react";
-
-type Message = {
-  id: string;
-  role: "user" | "ai";
-  text: string;
-};
+import { Message } from "../../../app/types/message";
 
 type Props = {
   message: Message;
@@ -14,9 +9,8 @@ type Props = {
 
 export default function MessageBubble({ message }: Props) {
   const isUser = message.role === "user";
-
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.text);
+    navigator.clipboard.writeText(message.content);
   };
 
   return (
@@ -37,7 +31,7 @@ export default function MessageBubble({ message }: Props) {
     >
       
       <div className="px-4 py-3 break-words whitespace-pre-wrap">
-        {message.text}
+        {message.content}
       </div>
 
       

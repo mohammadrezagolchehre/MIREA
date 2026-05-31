@@ -1,11 +1,6 @@
 'use client';
 import MessageBubble from "./MessageBubble";
-
-type Message = {
-  id: string;
-  role: "user" | "ai";
-  text: string;
-};
+import {Message} from "../../../app/types/message"
 
 type Props = {
   messages: Message[];

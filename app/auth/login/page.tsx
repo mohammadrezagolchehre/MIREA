@@ -1,30 +1,43 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff, LogIn, Route } from "lucide-react"
 import { GlassCard, GlassCardContent, GlassCardDescription, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card"
 import { GlassInput } from "@/components/ui/glass-input"
 import { GlassButton } from "@/components/ui/glass-button"
 import { Label } from "@radix-ui/react-label"
 import { useRouter } from "next/navigation"
-import Grainient from "@/components/Grainient";
-
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import { loginSchema, LoginFormValues } from "@/lib/vakidation";
+import { Eye, EyeOff, LogIn } from "lucide-react"
 
 export default function LoginPageBlock() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  })
   const [isLoading, setIsLoading] = useState(false)
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    alert(`Logged in with email: ${email}`)
-  }
+    try {
+      console.log(data);
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 2000)
+      );
+
+      alert(`Logged in with email: ${data.email}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
   return (
     <div className="min-h-screen py-4 flex items-center justify-center px-4 sm:px-6 md:px-12 lg:px-40 ">
@@ -43,7 +56,7 @@ export default function LoginPageBlock() {
         </GlassCardHeader>
 
         <GlassCardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Email Input */}
             <div dir="rtl" className="space-y-2">
               <Label htmlFor="email" className="text-white/65" >
@@ -53,11 +66,14 @@ export default function LoginPageBlock() {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
                 className="bg-white/5"
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-red-400 text-xs">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -81,11 +97,14 @@ export default function LoginPageBlock() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
                   className="bg-white/5 pr-10"
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-red-400 text-xs">
+                    {errors.password.message}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -96,7 +115,7 @@ export default function LoginPageBlock() {
               </div>
             </div>
             {/* Submit Button */}
-            <GlassButton type="submit" variant="primary" className="w-full" disabled={isLoading}>
+            <GlassButton type="submit" variant="primary" className="w-full" disabled={isSubmitting || isLoading}>
               {isLoading ? (
                 <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin mr-2" />
