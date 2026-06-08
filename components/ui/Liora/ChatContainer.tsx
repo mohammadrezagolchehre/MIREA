@@ -15,6 +15,8 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const stopRef = useRef(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [editValue, setEditValue] = useState<string>("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,6 +25,16 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
   const handleStop = () => {
     stopRef.current = true;
     setIsStreaming(false);
+  };
+
+  const handleEdit = (id: string, content: string) => {
+  setEditingId(id);
+  setEditValue(content);
+  // پیام کاربر و همه چیز بعدش رو حذف کن
+  setMessages((prev) => {
+    const index = prev.findIndex((m) => m.id === id);
+    return prev.slice(0, index);
+    });
   };
 
   const handleSend = async (text: string) => {
@@ -90,12 +102,18 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
   return (
     <div className="flex flex-col h-full">
       <div className={`flex-1 overflow-y-auto px-4 pt-20 ${messages.length ? "pb-32" : "pb-4"}`}>
-        <MessageList messages={messages} />
+        <MessageList messages={messages} onEdit={handleEdit} />
         <div ref={bottomRef} />
       </div>
 
       <div className="sticky bottom-0 left-0 w-full p-4 shrink-0">
-        <MessageInput onSend={handleSend} isStreaming={isStreaming} onStop={handleStop} />
+        <MessageInput
+          onSend={handleSend}
+          isStreaming={isStreaming}
+          onStop={handleStop}
+          defaultValue={editValue}
+          onDefaultValueUsed={() => setEditValue("")}
+        />
       </div>
     </div>
   );

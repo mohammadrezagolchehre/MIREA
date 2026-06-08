@@ -9,23 +9,40 @@ type MessageInputProps = {
   onSend: (text: string) => void;
   isStreaming: boolean;
   onStop: () => void;
+  defaultValue?: string;
+  onDefaultValueUsed?: () => void;
 };
 
 export default function MessageInput({
   onSend,
   isStreaming,
   onStop,
+  defaultValue,
+  onDefaultValueUsed,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const hasText = message.trim().length > 0;
+  const prevDefaultValue = useRef<string>("");
+
+  useEffect(() => {
+    if (defaultValue && defaultValue !== prevDefaultValue.current) {
+      prevDefaultValue.current = defaultValue;
+      setMessage(defaultValue);
+      onDefaultValueUsed?.();
+      setTimeout(() => {
+        textareaRef.current?.focus();
+        const len = defaultValue.length;
+        textareaRef.current?.setSelectionRange(len, len);
+      }, 50);
+    }
+  }, [defaultValue]);
 
   // Auto resize
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-
     textarea.style.height = "auto";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
   }, [message]);
@@ -56,29 +73,16 @@ export default function MessageInput({
       />
 
       <GlassButton
-        variant={
-          isStreaming
-            ? "outline"
-            : hasText
-            ? "default"
-            : "outline"
-        }
+        variant={isStreaming ? "outline" : hasText ? "default" : "outline"}
         size="icon"
         onClick={() => {
-          if (isStreaming) {
-            onStop();
-          } else {
-            handleSend();
-          }
+          if (isStreaming) onStop();
+          else handleSend();
         }}
         disabled={!hasText && !isStreaming}
         className="absolute left-3 bottom-8 md:bottom-9.5 h-9 w-9"
       >
-        {isStreaming ? (
-          <Square size={16} />
-        ) : (
-          <CornerLeftUp size={18} />
-        )}
+        {isStreaming ? <Square size={16} /> : <CornerLeftUp size={18} />}
       </GlassButton>
     </div>
   );
