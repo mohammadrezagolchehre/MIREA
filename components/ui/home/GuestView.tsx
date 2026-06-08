@@ -5,7 +5,7 @@ import GuestHeader from "./GuestHeader";
 import GradientText from "@/components/ui/GradiantText";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
 import { Message } from "@/app/types/message";
-
+import { AuthUser } from "../../../hooks/UseAuth";
 export default function GuestView() {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -15,7 +15,7 @@ export default function GuestView() {
 
       <main className="relative h-dvh flex flex-col px-4">
 
-        <GuestHeader />
+        <GuestHeader/>
 
         {/* Hero — فقط قبل از اولین پیام */}
         {messages.length === 0 && (
