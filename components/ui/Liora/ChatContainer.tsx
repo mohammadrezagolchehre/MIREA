@@ -9,6 +9,7 @@ import { Message } from "../../../app/types/message";
 type Props = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  inputOnly?: boolean;
 };
 
 export default function ChatContainer({
@@ -25,15 +26,16 @@ export default function ChatContainer({
       behavior: "smooth",
     });
   }, [messages]);
-
+  
   const handleStop = () => {
     stopRef.current = true;
     setIsStreaming(false);
   };
+  
 
   const handleSend = async (text: string) => {
     if (!text.trim() || isStreaming) return;
-
+    
     stopRef.current = false;
 
     const userMessage: Message = {
@@ -106,12 +108,14 @@ export default function ChatContainer({
     } finally {
       setIsStreaming(false);
     }
+    
   };
 
+  
   return (
     <div className="flex flex-col h-full">
       <div
-        className={`flex-1 overflow-y-auto px-4 ${
+        className={`flex-1 overflow-y-auto px-4 pt-24 ${
           messages.length ? "pb-32" : "pb-4"
         }`}
       >
@@ -123,11 +127,7 @@ export default function ChatContainer({
       </div>
 
       <div className="sticky bottom-0 left-0 w-full p-4 shrink-0">
-        {messages.length === 0 && (
-          <div className="mb-4">
-            <OptionChips onSelect={handleSend} />
-          </div>
-        )}
+
 
         <MessageInput
           onSend={handleSend}

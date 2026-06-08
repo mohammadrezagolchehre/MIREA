@@ -1,47 +1,92 @@
 'use client';
 
-import { StatsGrid } from "@/components/stats-widget";
-import { CurrentWeatherWidget } from "@/components/weather-widget";
-import { StockTickerWidget } from "@/components/stock-widget";
+import { useState } from "react";
+import DashboardHeader from "./DashboardHeader";
+import ChatContainer from "@/components/ui/Liora/ChatContainer";
+import MiraSidebar, { ChatSession } from "@/components/ui/home/Mireasidebar";
+import WelcomeScreen from "@/components/ui/home/WelcomeScreen";
+import { Message } from "@/app/types/message";
+import { text } from "stream/consumers";
+
+const MOCK_USER = { firstName: "محمدرضا" };
+
+const MOCK_SESSIONS: ChatSession[] = [
+  { id: "1", title: "درباره اضطراب امتحان", preview: "حالم خوب نیست، خیلی استرس...", date: "امروز" },
+  { id: "2", title: "رابطه با مادرم", preview: "میخوام درباره رابطه‌م صحبت کنم...", date: "دیروز" },
+  { id: "3", title: "احساس تنهایی", preview: "ذهنم شلوغه و نمیتونم...", date: "۳ روز پیش" },
+  { id: "4", title: "رشد شخصی", preview: "کمکم کن رشد کنم...", date: "هفته پیش" },
+];
 
 export default function DashboardView() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | undefined>();
+
+  const handleNewChat = () => {
+    setMessages([]);
+    setActiveChatId(undefined);
+  };
+
+  const handleSelectChat = (id: string) => {
+    setActiveChatId(id);
+    setMessages([]);
+  };
+
   return (
-        <section className="mt-15 w-full flex justify-center">
-          <div className="w-full max-w-4xl mx-auto px-6 md: px-20">
+    // بدون dir روی wrapper — هر کامپوننت dir خودش رو داره
+    <div className="relative min-h-screen">
 
+      {/* Sidebar — overlay، فضا نمیگیره */}
+      <MiraSidebar
+        sessions={MOCK_SESSIONS}
+        activeChatId={activeChatId}
+        onNewChat={handleNewChat}
+        onSelectChat={handleSelectChat}
+      />
 
-            <div className="grid grid-cols-3 gap-3 sm:gap-6 w-full px-5 items-stretch"> {/* items-stretch برای کشیدن ارتفاع */}
-              <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]"> {/* scale درست شد، min-h اضافه شد */}
-                <StatsGrid 
-                  stats={[
-                    {
-                      title: "شاخص خودآگاهی",
-                      value: "74%",
-                      change: { value: 3.1, type: "increase" },
-                      glowColor: "pink",
-                    },
-                  ]}
-                />  
-              </div>
-              <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]">
-                <StockTickerWidget
-                  symbol="شاخص خودآگاهی"
-                  name="Emotional Growth Index"
-                  price={78.4}
-                  change={+2.3}
-                  changePercent={3.1}
-                  chartData={[62, 65, 68, 70, 72, 75, 78]}
-                />
-              </div>
-              <div className="w-full scale-[0.85] sm:scale-100 origin-top min-h-[200px]  " >
-                <CurrentWeatherWidget
-                  temperature="آرام"
-                  location="وضعیت احساسی امروز"
-                />
-              </div>
+      {/* Main — همیشه full width و وسط‌چین */}
+      <div className="flex flex-col h-dvh">
+        <DashboardHeader />
+
+        <main className="flex-1 flex flex-col overflow-hidden">
+          <div className="max-w-3xl mx-auto w-full h-full flex flex-col px-4">
+
+        {messages.length === 0 ? (
+          <>
+            {/* WelcomeScreen وسط صفحه */}
+            <div className="flex-1 flex items-center justify-center">
+              <WelcomeScreen
+                firstName={MOCK_USER.firstName}
+                onSelect={(text) => {
+                  const msg: Message = {
+                    id: crypto.randomUUID(),
+                    role: "user",
+                    content: text,
+                    createdAt: new Date().toISOString(),
+                    status: "completed",
+                  };
+                  setMessages([msg]);
+                }}
+              />
             </div>
 
-        </div>
-      </section>
+            {/* Input ثابت پایین */}
+            <div className="pb-6">
+              <ChatContainer
+                messages={messages}
+                setMessages={setMessages}
+                inputOnly
+              />
+            </div>
+          </>
+        ) : (
+          <ChatContainer
+            messages={messages}
+            setMessages={setMessages}
+          />
+        )}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
