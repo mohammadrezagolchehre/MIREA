@@ -8,8 +8,23 @@ type Props = {
   onEdit?: (id: string, content: string) => void;
 };
 
+function TypingDots() {
+  return (
+    <div className="flex gap-1 items-center px-1 py-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-white/50 animate-bounce"
+          style={{ animationDelay: `${i * 150}ms` }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function MessageBubble({ message, onEdit }: Props) {
   const isUser = message.role === "user";
+  const isLoading = message.status === "streaming" && !message.content;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content);
@@ -27,25 +42,26 @@ export default function MessageBubble({ message, onEdit }: Props) {
       `}
     >
       <div className="px-4 py-3 break-words whitespace-pre-wrap">
-        {message.content}
+        {isLoading ? <TypingDots /> : message.content}
       </div>
 
-      <div className="px-3 pb-2">
-        <div className="hidden md:flex gap-3 opacity-0 group-hover:opacity-100 transition">
-          <button onClick={handleCopy} className="text-white/50 hover:text-white transition">
-            <Copy size={16} />
-          </button>
-
-          {isUser && onEdit && (
-            <button
-              onClick={() => onEdit(message.id, message.content)}
-              className="text-white/50 hover:text-white transition"
-            >
-              <Pencil size={16} />
+      {!isLoading && (
+        <div className="px-3 pb-2">
+          <div className="hidden md:flex gap-3 opacity-0 group-hover:opacity-100 transition">
+            <button onClick={handleCopy} className="text-white/50 hover:text-white transition">
+              <Copy size={16} />
             </button>
-          )}
+            {isUser && onEdit && (
+              <button
+                onClick={() => onEdit(message.id, message.content)}
+                className="text-white/50 hover:text-white transition"
+              >
+                <Pencil size={16} />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

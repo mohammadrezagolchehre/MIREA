@@ -16,7 +16,6 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
   const stopRef = useRef(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [editValue, setEditValue] = useState<string>("");
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -28,12 +27,10 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
   };
 
   const handleEdit = (id: string, content: string) => {
-  setEditingId(id);
-  setEditValue(content);
-  // پیام کاربر و همه چیز بعدش رو حذف کن
-  setMessages((prev) => {
-    const index = prev.findIndex((m) => m.id === id);
-    return prev.slice(0, index);
+    setEditValue(content);
+    setMessages((prev) => {
+      const index = prev.findIndex((m) => m.id === id);
+      return prev.slice(0, index);
     });
   };
 
@@ -61,7 +58,6 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
     setIsStreaming(true);
 
     try {
-      // history رو میفرستیم تا میرآ مکالمه رو یادش بمونه
       const history = updatedMessages
         .filter((m) => m.status === "completed")
         .map((m) => ({ role: m.role, content: m.content }));
@@ -72,15 +68,51 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
         body: JSON.stringify({ message: text, history }),
       });
 
-      if (!response.ok) throw new Error("API Error");
+      if (!response.ok || !response.body) throw new Error("API Error");
 
-      const data = await response.json();
+      // خوندن stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
 
+      while (true) {
+        if (stopRef.current) break;
+
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+
+        for (const line of lines) {
+          const json = line.replace("data: ", "").trim();
+          if (json === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(json);
+            const delta = parsed.choices?.[0]?.delta?.content ?? "";
+            if (delta) {
+              fullContent += delta;
+              // آپدیت real-time
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === aiId ? { ...m, content: fullContent, status: "streaming" } : m
+                )
+              );
+            }
+          } catch {
+            // خط ناقص، skip میکنیم
+          }
+        }
+      }
+
+      // وضعیت نهایی
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === aiId ? { ...m, content: data.response, status: "completed" } : m
+          m.id === aiId ? { ...m, content: fullContent, status: "completed" } : m
         )
       );
+
     } catch (error) {
       console.error(error);
       setMessages((prev) =>

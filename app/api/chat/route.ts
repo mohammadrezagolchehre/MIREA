@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 const MIRA_SYSTEM_PROMPT = `تو میرآ هستی — یک همراه احساسی و ذهنی که با گرمی، صداقت و بدون قضاوت گوش میدی.
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const { message, history = [] } = await req.json();
 
     if (!message?.trim()) {
-      return NextResponse.json({ error: "پیام خالی است" }, { status: 400 });
+      return new Response(JSON.stringify({ error: "پیام خالی است" }), { status: 400 });
     }
 
     const messages = [
@@ -40,27 +40,32 @@ export async function POST(req: NextRequest) {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "Mirea",
+        "X-Title": "Mira",
       },
       body: JSON.stringify({
         model: "openrouter/free",
         messages,
+        stream: true, // 👈 streaming فعال
       }),
     });
 
     if (!response.ok) {
       const err = await response.json();
       console.error("OpenRouter error:", err);
-      return NextResponse.json({ error: "خطا در دریافت پاسخ" }, { status: 500 });
+      return new Response(JSON.stringify({ error: "خطا در دریافت پاسخ" }), { status: 500 });
     }
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content ?? "پاسخی دریافت نشد";
-
-    return NextResponse.json({ response: reply });
+    // stream رو مستقیم به client پاس میدیم
+    return new Response(response.body, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
+    });
 
   } catch (error) {
     console.error("API error:", error);
-    return NextResponse.json({ error: "خطا در دریافت پاسخ" }, { status: 500 });
+    return new Response(JSON.stringify({ error: "خطا در دریافت پاسخ" }), { status: 500 });
   }
 }
