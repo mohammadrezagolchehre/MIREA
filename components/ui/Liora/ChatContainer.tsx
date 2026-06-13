@@ -4,22 +4,33 @@ import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "../../../app/types/message";
+import { useEmotion } from "../../context/EmotionContext";
 
 type Props = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   inputOnly?: boolean;
+  pendingMessage?: string;
+  onPendingMessageSent?: () => void;
 };
 
-export default function ChatContainer({ messages, setMessages, inputOnly }: Props) {
+export default function ChatContainer({ messages, setMessages, inputOnly, pendingMessage, onPendingMessageSent }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const stopRef = useRef(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [editValue, setEditValue] = useState<string>("");
+  const { detectEmotion } = useEmotion();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (pendingMessage) {
+      handleSend(pendingMessage);
+      onPendingMessageSent?.();
+    }
+  }, [pendingMessage]);
 
   const handleStop = () => {
     stopRef.current = true;
@@ -70,14 +81,12 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
 
       if (!response.ok || !response.body) throw new Error("API Error");
 
-      // خوندن stream
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullContent = "";
 
       while (true) {
         if (stopRef.current) break;
-
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -87,31 +96,34 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
         for (const line of lines) {
           const json = line.replace("data: ", "").trim();
           if (json === "[DONE]") break;
-
           try {
             const parsed = JSON.parse(json);
             const delta = parsed.choices?.[0]?.delta?.content ?? "";
             if (delta) {
               fullContent += delta;
-              // آپدیت real-time
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === aiId ? { ...m, content: fullContent, status: "streaming" } : m
                 )
               );
             }
-          } catch {
-            // خط ناقص، skip میکنیم
-          }
+          } catch { }
         }
       }
 
-      // وضعیت نهایی
+      // پیام کامل شد — آپدیت state و تشخیص احساس
       setMessages((prev) =>
         prev.map((m) =>
           m.id === aiId ? { ...m, content: fullContent, status: "completed" } : m
         )
       );
+
+      // 👇 تشخیص احساس بعد از تموم شدن پیام
+      const allMessages = [
+        ...updatedMessages.map((m) => ({ role: m.role, content: m.content })),
+        { role: "assistant", content: fullContent },
+      ];
+      detectEmotion(allMessages);
 
     } catch (error) {
       console.error(error);
@@ -133,7 +145,7 @@ export default function ChatContainer({ messages, setMessages, inputOnly }: Prop
 
   return (
     <div className="flex flex-col h-full">
-      <div className={`flex-1 overflow-y-auto px-4 pt-20 ${messages.length ? "pb-32" : "pb-4"}`}>
+      <div className={`flex-1 overflow-y-auto px-4 pt-20 [&::-webkit-scrollbar]:hidden ${messages.length ? "pb-32" : "pb-4"}`}>
         <MessageList messages={messages} onEdit={handleEdit} />
         <div ref={bottomRef} />
       </div>

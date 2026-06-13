@@ -22,6 +22,8 @@ export default function GuestHeader() {
   const [firstName, setFirstName] = useState("");
   const [timer, setTimer] = useState(120);
   const [timerActive, setTimerActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const startTimer = () => {
     setTimer(120);
@@ -37,33 +39,83 @@ export default function GuestHeader() {
   const formatTimer = (s: number) =>
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (phone.length < 10) return;
-    // Mock: بعداً API call
-    setStep("otp");
-    startTimer();
-  };
+    setLoading(true);
+    setError("");
 
-  const handleVerifyOtp = () => {
-    const code = otp.join("");
-    if (code.length < 5) return;
-    // Mock: بعداً از API میفهمیم کاربر جدیده یا نه
-    const isNewUser = true;
-    if (isNewUser) {
-      setStep("name");
-    } else {
-      // کاربر قدیمی — مستقیم لاگین
-      login({ phone, firstName: "کاربر" }); // بعداً اسم از API میاد
-      setOpen(false);
-      resetForm();
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setStep("otp");
+      startTimer();
+    } catch (err: any) {
+      setError(err.message ?? "خطا در ارسال کد");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleFinish = () => {
+  const handleVerifyOtp = async () => {
+    const code = otp.join("");
+    if (code.length < 5) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, code }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      if (data.isNewUser) {
+        setStep("name");
+      } else {
+        login(data.user);
+        setOpen(false);
+        resetForm();
+      }
+    } catch (err: any) {
+      setError(err.message ?? "کد اشتباه است");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFinish = async () => {
     if (!firstName.trim()) return;
-    login({ phone, firstName: firstName.trim() });
-    setOpen(false);
-    resetForm();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, firstName: firstName.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      login(data.user);
+      setOpen(false);
+      resetForm();
+    } catch (err: any) {
+      setError(err.message ?? "خطا در ثبت‌نام");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetForm = () => {
@@ -71,6 +123,7 @@ export default function GuestHeader() {
     setPhone("");
     setOtp(["", "", "", "", ""]);
     setFirstName("");
+    setError("");
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -102,6 +155,13 @@ export default function GuestHeader() {
         <GlassDropdownMenuContent align="end" className="w-80 p-5">
           <div dir="rtl" className="space-y-4">
 
+            {/* نمایش خطا */}
+            {error && (
+              <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
+                {error}
+              </p>
+            )}
+
             {step === "phone" && (
               <>
                 <div className="space-y-1">
@@ -120,9 +180,9 @@ export default function GuestHeader() {
                   variant="primary"
                   className="w-full"
                   onClick={handleSendOtp}
-                  disabled={phone.length < 10}
+                  disabled={phone.length < 10 || loading}
                 >
-                  ارسال کد تأیید
+                  {loading ? "در حال ارسال..." : "ارسال کد تأیید"}
                 </GlassButton>
               </>
             )}
@@ -163,11 +223,11 @@ export default function GuestHeader() {
                   variant="primary"
                   className="w-full"
                   onClick={handleVerifyOtp}
-                  disabled={otp.join("").length < 5}
+                  disabled={otp.join("").length < 5 || loading}
                 >
-                  تأیید
+                  {loading ? "در حال بررسی..." : "تأیید"}
                 </GlassButton>
-                <button onClick={() => setStep("phone")} className="w-full text-center text-white/40 text-xs hover:text-white/60">
+                <button onClick={() => { setStep("phone"); setError(""); }} className="w-full text-center text-white/40 text-xs hover:text-white/60">
                   ← تغییر شماره
                 </button>
               </>
@@ -189,9 +249,9 @@ export default function GuestHeader() {
                   variant="primary"
                   className="w-full"
                   onClick={handleFinish}
-                  disabled={!firstName.trim()}
+                  disabled={!firstName.trim() || loading}
                 >
-                  شروع کن
+                  {loading ? "در حال ثبت..." : "شروع کن"}
                 </GlassButton>
               </>
             )}

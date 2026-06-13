@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 export type AuthUser = {
+  id: string;
   phone: string;
   firstName: string;
   lastName?: string;
@@ -28,11 +29,13 @@ export function useAuth() {
   const login = (userData: AuthUser) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
     setUser(userData);
+    window.location.reload();
   };
 
   const logout = () => {
     localStorage.removeItem(STORAGE_KEY);
     setUser(null);
+    window.location.reload();
   };
 
   const updateProfile = (updates: Partial<AuthUser>) => {

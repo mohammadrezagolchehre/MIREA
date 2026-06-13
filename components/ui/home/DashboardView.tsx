@@ -1,39 +1,68 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import DashboardHeader from "./DashboardHeader";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
-import MiraSidebar, { ChatSession } from "./Mireasidebar";
+import MiraSidebar from "./Mireasidebar";
 import WelcomeScreen from "@/components/ui/home/WelcomeScreen";
 import { Message } from "@/app/types/message";
 import { AuthUser } from "../../../hooks/UseAuth";
+import { useChatHistory } from "../../../hooks/Usechathistory";
 
 type Props = {
   user: AuthUser;
 };
 
-const MOCK_SESSIONS: ChatSession[] = [
-  { id: "1", title: "درباره اضطراب امتحان", preview: "حالم خوب نیست، خیلی استرس...", date: "امروز" },
-  { id: "2", title: "رابطه با مادرم", preview: "میخوام درباره رابطه‌م صحبت کنم...", date: "دیروز" },
-  { id: "3", title: "احساس تنهایی", preview: "ذهنم شلوغه و نمیتونم...", date: "۳ روز پیش" },
-  { id: "4", title: "رشد شخصی", preview: "کمکم کن رشد کنم...", date: "هفته پیش" },
-];
-
 export default function DashboardView({ user }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | undefined>();
+  const [pendingMessage, setPendingMessage] = useState("");
+  const { sessions, saveSession, loadSession, deleteSession } = useChatHistory(user.id);
+
+  const saveTimer = useRef<NodeJS.Timeout>();
+  useEffect(() => {
+    if (!activeChatId || messages.length === 0) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveSession(activeChatId, messages);
+    }, 1000);
+    return () => clearTimeout(saveTimer.current);
+  }, [messages, activeChatId]);
+
+  const handleNewChat = () => {
+    if (activeChatId && messages.length > 0) {
+      saveSession(activeChatId, messages);
+    }
+    setMessages([]);
+    setActiveChatId(crypto.randomUUID());
+  };
+
+  const handleSelectChat = async (id: string) => {
+    if (activeChatId && messages.length > 0) {
+      saveSession(activeChatId, messages);
+    }
+    const loaded = await loadSession(id);
+    setMessages(loaded);
+    setActiveChatId(id);
+  };
+
+  useEffect(() => {
+    if (!activeChatId) {
+      setActiveChatId(crypto.randomUUID());
+    }
+  }, []);
 
   return (
     <div className="relative min-h-screen">
       <MiraSidebar
-        sessions={MOCK_SESSIONS}
+        sessions={sessions}
         activeChatId={activeChatId}
-        onNewChat={() => { setMessages([]); setActiveChatId(undefined); }}
-        onSelectChat={(id) => { setActiveChatId(id); setMessages([]); }}
+        onNewChat={handleNewChat}
+        onSelectChat={handleSelectChat}
+        onDeleteChat={deleteSession}
       />
 
       <div className="flex flex-col h-dvh">
-        {/* user رو پاس میدیم تا DashboardHeader اسم واقعی نشون بده */}
         <DashboardHeader user={user} />
 
         <main className="flex-1 flex flex-col overflow-hidden">
@@ -42,18 +71,16 @@ export default function DashboardView({ user }: Props) {
               <>
                 <WelcomeScreen
                   firstName={user.firstName}
-                  onSelect={(text) => {
-                    setMessages([{
-                      id: crypto.randomUUID(),
-                      role: "user",
-                      content: text,
-                      createdAt: new Date().toISOString(),
-                      status: "completed",
-                    }]);
-                  }}
+                  onSelect={(text) => setPendingMessage(text)}
                 />
                 <div className="pb-6">
-                  <ChatContainer messages={messages} setMessages={setMessages} inputOnly />
+                  <ChatContainer
+                    messages={messages}
+                    setMessages={setMessages}
+                    inputOnly
+                    pendingMessage={pendingMessage}
+                    onPendingMessageSent={() => setPendingMessage("")}
+                  />
                 </div>
               </>
             ) : (
