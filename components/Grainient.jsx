@@ -8,6 +8,16 @@ const hexToRgb = hex => {
   return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255];
 };
 
+const COLOR_TRANSITION_MS = 3000;
+
+const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+const lerpColor = (from, to, amount) => [
+  from[0] + (to[0] - from[0]) * amount,
+  from[1] + (to[1] - from[1]) * amount,
+  from[2] + (to[2] - from[2]) * amount
+];
+
 const vertex = `#version 300 es
 in vec2 position;
 void main() {
@@ -125,6 +135,28 @@ const Grainient = ({
   className = ''
 }) => {
   const containerRef = useRef(null);
+  const currentColorsRef = useRef({
+    color1: hexToRgb(color1),
+    color2: hexToRgb(color2),
+    color3: hexToRgb(color3)
+  });
+  const colorTransitionRef = useRef(null);
+
+  useEffect(() => {
+    colorTransitionRef.current = {
+      startedAt: performance.now(),
+      start: {
+        color1: [...currentColorsRef.current.color1],
+        color2: [...currentColorsRef.current.color2],
+        color3: [...currentColorsRef.current.color3]
+      },
+      target: {
+        color1: hexToRgb(color1),
+        color2: hexToRgb(color2),
+        color3: hexToRgb(color3)
+      }
+    };
+  }, [color1, color2, color3]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -170,9 +202,9 @@ const Grainient = ({
         uSaturation: { value: saturation },
         uCenterOffset: { value: new Float32Array([centerX, centerY]) },
         uZoom: { value: zoom },
-        uColor1: { value: new Float32Array(hexToRgb(color1)) },
-        uColor2: { value: new Float32Array(hexToRgb(color2)) },
-        uColor3: { value: new Float32Array(hexToRgb(color3)) }
+        uColor1: { value: new Float32Array(currentColorsRef.current.color1) },
+        uColor2: { value: new Float32Array(currentColorsRef.current.color2) },
+        uColor3: { value: new Float32Array(currentColorsRef.current.color3) }
       }
     });
 
@@ -196,6 +228,27 @@ const Grainient = ({
     const t0 = performance.now();
     const loop = t => {
       program.uniforms.iTime.value = (t - t0) * 0.001;
+
+      if (colorTransitionRef.current) {
+        const transition = colorTransitionRef.current;
+        const progress = Math.min(1, (t - transition.startedAt) / COLOR_TRANSITION_MS);
+        const amount = easeInOutCubic(progress);
+        const nextColors = {
+          color1: lerpColor(transition.start.color1, transition.target.color1, amount),
+          color2: lerpColor(transition.start.color2, transition.target.color2, amount),
+          color3: lerpColor(transition.start.color3, transition.target.color3, amount)
+        };
+
+        currentColorsRef.current = nextColors;
+        program.uniforms.uColor1.value.set(nextColors.color1);
+        program.uniforms.uColor2.value.set(nextColors.color2);
+        program.uniforms.uColor3.value.set(nextColors.color3);
+
+        if (progress >= 1) {
+          colorTransitionRef.current = null;
+        }
+      }
+
       renderer.render({ scene: mesh });
       raf = requestAnimationFrame(loop);
     };
@@ -229,10 +282,7 @@ const Grainient = ({
     saturation,
     centerX,
     centerY,
-    zoom,
-    color1,
-    color2,
-    color3
+    zoom
   ]);
 
   return <div ref={containerRef} className={`grainient-container ${className}`.trim()} />;

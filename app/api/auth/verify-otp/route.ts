@@ -1,48 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { db } from "@/lib/db";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!
-);
+type OtpRow = {
+  id: string;
+};
+
+type UserRow = {
+  id: string;
+  phone: string;
+  first_name: string;
+  last_name: string | null;
+};
 
 export async function POST(req: NextRequest) {
   try {
     const { phone, code } = await req.json();
 
     if (!phone || !code) {
-      return NextResponse.json({ error: "اطلاعات ناقص است" }, { status: 400 });
+      return NextResponse.json(
+        { error: "اطلاعات ناقص است" },
+        { status: 400 }
+      );
     }
 
-    // کد رو پیدا کن
-    const { data: otpData, error: otpError } = await supabaseAdmin
-      .from("otp_codes")
-      .select("*")
-      .eq("phone", phone)
-      .eq("code", code)
-      .eq("used", false)
-      .gt("expires_at", new Date().toISOString())
-      .single();
+    const [otpData] = await db<OtpRow>(
+      `SELECT id
+       FROM otp_codes
+       WHERE phone = $1
+         AND code = $2
+         AND used = false
+         AND expires_at > now()
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [phone, code]
+    );
 
-    if (otpError || !otpData) {
-      return NextResponse.json({ error: "کد اشتباه یا منقضی شده" }, { status: 400 });
+    if (!otpData) {
+      return NextResponse.json(
+        { error: "کد اشتباه یا منقضی شده" },
+        { status: 400 }
+      );
     }
 
-    // کد رو used کن
-    await supabaseAdmin
-      .from("otp_codes")
-      .update({ used: true })
-      .eq("id", otpData.id);
+    await db("UPDATE otp_codes SET used = true WHERE id = $1", [otpData.id]);
 
-    // چک کن کاربر قبلاً ثبت‌نام کرده؟
-    const { data: existingUser } = await supabaseAdmin
-      .from("users")
-      .select("*")
-      .eq("phone", phone)
-      .single();
+    const [existingUser] = await db<UserRow>(
+      `SELECT id, phone, first_name, last_name
+       FROM users
+       WHERE phone = $1
+       LIMIT 1`,
+      [phone]
+    );
 
     if (existingUser) {
-      // کاربر قدیمی — مستقیم لاگین
       return NextResponse.json({
         success: true,
         isNewUser: false,
@@ -50,20 +60,21 @@ export async function POST(req: NextRequest) {
           id: existingUser.id,
           phone: existingUser.phone,
           firstName: existingUser.first_name,
-          lastName: existingUser.last_name,
+          lastName: existingUser.last_name ?? undefined,
         },
-      });
-    } else {
-      // کاربر جدید — باید اسم بده
-      return NextResponse.json({
-        success: true,
-        isNewUser: true,
-        phone,
       });
     }
 
+    return NextResponse.json({
+      success: true,
+      isNewUser: true,
+      phone,
+    });
   } catch (error) {
     console.error("verify-otp error:", error);
-    return NextResponse.json({ error: "خطا در تأیید کد" }, { status: 500 });
+    return NextResponse.json(
+      { error: "خطا در تایید کد" },
+      { status: 500 }
+    );
   }
 }

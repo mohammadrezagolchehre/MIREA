@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { GlassButton } from "@/components/ui/glass-button";
 import {
   GlassDropdownMenu,
@@ -11,6 +12,11 @@ import { GlassInput } from "@/components/ui/glass-input";
 import { useAuth } from "../../../hooks/UseAuth";
 
 type Step = "phone" | "otp" | "name";
+
+const steps: Step[] = ["phone", "otp", "name"];
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : undefined;
 
 export default function GuestHeader() {
   const { login } = useAuth();
@@ -24,6 +30,9 @@ export default function GuestHeader() {
   const [timerActive, setTimerActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [otpShakeKey, setOtpShakeKey] = useState(0);
+
+  const stepIndex = steps.indexOf(step);
 
   const startTimer = () => {
     setTimer(120);
@@ -56,8 +65,8 @@ export default function GuestHeader() {
 
       setStep("otp");
       startTimer();
-    } catch (err: any) {
-      setError(err.message ?? "خطا در ارسال کد");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) ?? "خطا در ارسال کد");
     } finally {
       setLoading(false);
     }
@@ -86,8 +95,9 @@ export default function GuestHeader() {
         setOpen(false);
         resetForm();
       }
-    } catch (err: any) {
-      setError(err.message ?? "کد اشتباه است");
+    } catch (err: unknown) {
+      setOtpShakeKey((key) => key + 1);
+      setError(getErrorMessage(err) ?? "کد اشتباه است");
     } finally {
       setLoading(false);
     }
@@ -111,8 +121,8 @@ export default function GuestHeader() {
       login(data.user);
       setOpen(false);
       resetForm();
-    } catch (err: any) {
-      setError(err.message ?? "خطا در ثبت‌نام");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) ?? "خطا در ثبت‌نام");
     } finally {
       setLoading(false);
     }
@@ -154,18 +164,40 @@ export default function GuestHeader() {
 
         <GlassDropdownMenuContent align="end" className="w-80 p-5">
           <div dir="rtl" className="space-y-4">
+            <div className="flex items-center gap-2" aria-label="مراحل ورود">
+              {steps.map((item, index) => (
+                <div
+                  key={item}
+                  className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                    index <= stepIndex ? "bg-cyan-400/70" : "bg-white/10"
+                  }`}
+                />
+              ))}
+            </div>
 
             {/* نمایش خطا */}
             {error && (
-              <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
+              <motion.p
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-lg border border-red-400/20 bg-red-400/10 px-3 py-2 text-xs text-red-400"
+              >
                 {error}
-              </p>
+              </motion.p>
             )}
 
-            {step === "phone" && (
-              <>
+            <AnimatePresence mode="wait">
+              {step === "phone" && (
+                <motion.div
+                  key="phone"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="space-y-4"
+                >
                 <div className="space-y-1">
-                  <p className="text-white font-medium text-sm">ورود / ثبت‌نام</p>
+                  <p className="text-sm font-medium text-white/90">ورود / ثبت‌نام</p>
                   <p className="text-white/40 text-xs">شماره موبایلت رو وارد کن</p>
                 </div>
                 <GlassInput
@@ -184,16 +216,29 @@ export default function GuestHeader() {
                 >
                   {loading ? "در حال ارسال..." : "ارسال کد تأیید"}
                 </GlassButton>
-              </>
-            )}
+                </motion.div>
+              )}
 
-            {step === "otp" && (
-              <>
+              {step === "otp" && (
+                <motion.div
+                  key="otp"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="space-y-4"
+                >
                 <div className="space-y-1">
-                  <p className="text-white font-medium text-sm">کد تأیید</p>
+                  <p className="text-sm font-medium text-white/90">کد تأیید</p>
                   <p className="text-white/40 text-xs">کد ۵ رقمی ارسال شده به {phone}</p>
                 </div>
-                <div dir="ltr" className="flex gap-2 justify-center">
+                <motion.div
+                  key={otpShakeKey}
+                  dir="ltr"
+                  className="flex justify-center gap-2"
+                  animate={otpShakeKey ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                >
                   {otp.map((digit, i) => (
                     <input
                       key={i}
@@ -203,13 +248,13 @@ export default function GuestHeader() {
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
-                      className="w-11 h-12 text-center text-white text-lg font-bold
+                      className="w-11 h-12 text-center text-white/90 text-lg font-bold
                         bg-white/10 border border-white/20 rounded-xl
                         focus:outline-none focus:border-cyan-400/60 focus:bg-white/15
                         transition-all"
                     />
                   ))}
-                </div>
+                </motion.div>
                 <div className="text-center">
                   {timerActive ? (
                     <span className="text-white/40 text-xs">ارسال مجدد تا {formatTimer(timer)}</span>
@@ -230,13 +275,20 @@ export default function GuestHeader() {
                 <button onClick={() => { setStep("phone"); setError(""); }} className="w-full text-center text-white/40 text-xs hover:text-white/60">
                   ← تغییر شماره
                 </button>
-              </>
-            )}
+                </motion.div>
+              )}
 
-            {step === "name" && (
-              <>
+              {step === "name" && (
+                <motion.div
+                  key="name"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="space-y-4"
+                >
                 <div className="space-y-1">
-                  <p className="text-white font-medium text-sm">خوش اومدی!</p>
+                  <p className="text-sm font-medium text-white/90">خوش اومدی!</p>
                   <p className="text-white/40 text-xs">اسمت رو بهم بگو</p>
                 </div>
                 <GlassInput
@@ -253,8 +305,9 @@ export default function GuestHeader() {
                 >
                   {loading ? "در حال ثبت..." : "شروع کن"}
                 </GlassButton>
-              </>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
           </div>
         </GlassDropdownMenuContent>

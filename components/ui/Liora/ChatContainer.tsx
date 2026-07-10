@@ -144,13 +144,13 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className={`flex-1 overflow-y-auto px-4 pt-20 [&::-webkit-scrollbar]:hidden ${messages.length ? "pb-32" : "pb-4"}`}>
+    <div className="flex flex-col h-full min-h-0">
+      <div className={`flex-1 min-h-0 overflow-y-auto px-1 sm:px-4 pt-4 sm:pt-8 md:pt-20 [&::-webkit-scrollbar]:hidden ${messages.length ? "pb-28 sm:pb-32" : "pb-4"}`}>
         <MessageList messages={messages} onEdit={handleEdit} />
         <div ref={bottomRef} />
       </div>
 
-      <div className="sticky bottom-0 left-0 w-full p-4 shrink-0">
+      <div className="sticky bottom-0 left-0 w-full px-0 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 shrink-0">
         <MessageInput
           onSend={handleSend}
           isStreaming={isStreaming}

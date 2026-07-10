@@ -15,18 +15,20 @@ type Props = {
 
 export default function DashboardView({ user }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | undefined>();
+  const [activeChatId, setActiveChatId] = useState<string>(() => crypto.randomUUID());
   const [pendingMessage, setPendingMessage] = useState("");
   const { sessions, saveSession, loadSession, deleteSession } = useChatHistory(user.id);
 
-  const saveTimer = useRef<NodeJS.Timeout>();
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!activeChatId || messages.length === 0) return;
-    clearTimeout(saveTimer.current);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       saveSession(activeChatId, messages);
     }, 1000);
-    return () => clearTimeout(saveTimer.current);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
   }, [messages, activeChatId]);
 
   const handleNewChat = () => {
@@ -46,12 +48,6 @@ export default function DashboardView({ user }: Props) {
     setActiveChatId(id);
   };
 
-  useEffect(() => {
-    if (!activeChatId) {
-      setActiveChatId(crypto.randomUUID());
-    }
-  }, []);
-
   return (
     <div className="relative min-h-screen">
       <MiraSidebar
@@ -66,14 +62,14 @@ export default function DashboardView({ user }: Props) {
         <DashboardHeader user={user} />
 
         <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="max-w-3xl mx-auto w-full h-full flex flex-col px-4">
+          <div className="max-w-3xl mx-auto w-full h-full flex flex-col px-3 sm:px-4">
             {messages.length === 0 ? (
               <>
                 <WelcomeScreen
                   firstName={user.firstName}
                   onSelect={(text) => setPendingMessage(text)}
                 />
-                <div className="pb-6">
+                <div className="pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-6">
                   <ChatContainer
                     messages={messages}
                     setMessages={setMessages}

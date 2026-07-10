@@ -29,15 +29,17 @@ export default function MessageInput({
   useEffect(() => {
     if (defaultValue && defaultValue !== prevDefaultValue.current) {
       prevDefaultValue.current = defaultValue;
-      setMessage(defaultValue);
-      onDefaultValueUsed?.();
-      setTimeout(() => {
+      const timer = window.setTimeout(() => {
+        setMessage(defaultValue);
+        onDefaultValueUsed?.();
         textareaRef.current?.focus();
         const len = defaultValue.length;
         textareaRef.current?.setSelectionRange(len, len);
-      }, 50);
+      }, 0);
+
+      return () => window.clearTimeout(timer);
     }
-  }, [defaultValue]);
+  }, [defaultValue, onDefaultValueUsed]);
 
   // Auto resize
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function MessageInput({
         autoFocus
         rows={1}
         disabled={isStreaming}
-        className="pr-4 pl-14 py-4 max-h-[140px]"
+        className="pr-4 pl-14 py-3 sm:py-4 max-h-[140px] text-[16px] sm:text-sm"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -80,7 +82,7 @@ export default function MessageInput({
           else handleSend();
         }}
         disabled={!hasText && !isStreaming}
-        className="absolute left-3 bottom-8 md:bottom-9.5 h-9 w-9"
+        className="absolute left-3 bottom-7 sm:bottom-8 md:bottom-9.5 h-9 w-9"
       >
         {isStreaming ? <Square size={16} /> : <CornerLeftUp size={18} />}
       </GlassButton>

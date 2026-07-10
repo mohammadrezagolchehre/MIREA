@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { GlassButton } from "@/components/ui/glass-button";
 import { GlassAvatar } from "../glass-avatar";
 import { GlassInput } from "@/components/ui/glass-input";
@@ -49,25 +50,35 @@ export default function DashboardHeader({ user }: Props) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-end gap-3 px-5 py-4
-      md:bg-transparent md:backdrop-blur-none
-      bg-black/20 backdrop-blur-xl border-b border-white/5 md:border-transparent">
+    <header className="sticky top-0 z-20 flex items-center justify-end gap-2 border-b border-white/10 bg-black/20 px-3 py-3 shadow-[0_14px_40px_rgba(0,0,0,0.12)] backdrop-blur-2xl sm:gap-3 sm:px-5 sm:py-4 md:border-white/5 md:bg-white/5">
 
-      <GlassButton variant="subscription" onClick={() => router.push("/pricing")}>
+      <GlassButton variant="subscription" className="h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm" onClick={() => router.push("/pricing")}>
         خرید اشتراک
       </GlassButton>
 
       <GlassDropdownMenu>
         <GlassDropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2.5 outline-none group">
-            <span className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">
+          <button className="group flex items-center gap-2 outline-none">
+            <motion.span
+              key={firstName}
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="max-w-24 truncate text-sm font-medium text-white/80 transition-colors group-hover:text-white/90"
+            >
               {firstName}
-            </span>
-            <GlassAvatar className="size-10 shrink-0 flex items-center justify-center rounded-full
+            </motion.span>
+            <motion.div
+              whileHover={{ scale: 1.06, rotate: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <GlassAvatar className="size-9 sm:size-10 shrink-0 flex items-center justify-center rounded-full
               bg-gradient-to-br from-cyan-500/40 to-blue-500/40 border border-white/20
-              text-white text-sm font-bold group-hover:border-white/40 transition-colors">
-              {avatarText}
-            </GlassAvatar>
+              text-white/90 text-sm font-bold group-hover:border-white/40 transition-colors">
+                {avatarText}
+              </GlassAvatar>
+            </motion.div>
           </button>
         </GlassDropdownMenuTrigger>
 
@@ -85,13 +96,13 @@ export default function DashboardHeader({ user }: Props) {
         <GlassDialogContent className="max-w-md">
           <GlassDialogHeader className="items-center text-center">
             <div className="relative mx-auto">
-              <GlassAvatar className="size-20 mx-auto flex items-center justify-center rounded-full
+            <GlassAvatar className="size-20 mx-auto flex items-center justify-center rounded-full
                 border-2 border-cyan-400/40 bg-gradient-to-br from-cyan-500/30 to-blue-500/30
-                text-white text-2xl font-bold">
+                text-white/90 text-2xl font-bold">
                 {avatarText}
               </GlassAvatar>
             </div>
-            <GlassDialogTitle className="mt-4 text-white">
+            <GlassDialogTitle className="mt-4 text-white/90">
               {firstName} {lastName}
             </GlassDialogTitle>
           </GlassDialogHeader>
@@ -100,24 +111,24 @@ export default function DashboardHeader({ user }: Props) {
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               <p className="text-white/40 text-[11px] mb-1">نام</p>
               {isEditing ? (
-                <GlassInput value={firstName} onChange={(e) => setFirstName(e.target.value)} className="text-white w-full" />
+                <GlassInput value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full text-white/90" />
               ) : (
-                <p className="text-white text-sm">{firstName}</p>
+                <p className="text-sm text-white/85">{firstName}</p>
               )}
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               <p className="text-white/40 text-[11px] mb-1">نام خانوادگی</p>
               {isEditing ? (
-                <GlassInput value={lastName} onChange={(e) => setLastName(e.target.value)} className="text-white w-full" placeholder="اختیاری" />
+                <GlassInput value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full text-white/90" placeholder="اختیاری" />
               ) : (
-                <p className="text-white text-sm">{lastName || "—"}</p>
+                <p className="text-sm text-white/85">{lastName || "—"}</p>
               )}
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               <p className="text-white/40 text-[11px] mb-1">شماره تلفن</p>
-              <p className="text-white text-sm">{user.phone}</p>
+              <p className="text-sm text-white/85">{user.phone}</p>
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
