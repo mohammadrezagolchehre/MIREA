@@ -49,7 +49,7 @@ export default function DashboardView({ user }: Props) {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
       <MiraSidebar
         sessions={sessions}
         activeChatId={activeChatId}
@@ -58,18 +58,18 @@ export default function DashboardView({ user }: Props) {
         onDeleteChat={deleteSession}
       />
 
-      <div className="flex flex-col h-dvh">
+      <div className="flex h-dvh flex-col">
         <DashboardHeader user={user} />
 
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="max-w-3xl mx-auto w-full h-full flex flex-col px-3 sm:px-4">
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col px-3 sm:px-4">
             {messages.length === 0 ? (
               <>
                 <WelcomeScreen
                   firstName={user.firstName}
                   onSelect={(text) => setPendingMessage(text)}
                 />
-                <div className="pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-6">
+                <div className="shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-6">
                   <ChatContainer
                     messages={messages}
                     setMessages={setMessages}

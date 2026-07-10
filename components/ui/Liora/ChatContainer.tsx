@@ -145,7 +145,7 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <div className={`flex-1 min-h-0 overflow-y-auto px-1 sm:px-4 pt-4 sm:pt-8 md:pt-20 [&::-webkit-scrollbar]:hidden ${messages.length ? "pb-28 sm:pb-32" : "pb-4"}`}>
+      <div className={`flex-1 min-h-0 overflow-y-auto px-1 pt-4 sm:px-4 sm:pt-6 md:pt-8 [&::-webkit-scrollbar]:hidden ${messages.length ? "pb-28 sm:pb-32" : "pb-4"}`}>
         <MessageList messages={messages} onEdit={handleEdit} />
         <div ref={bottomRef} />
       </div>

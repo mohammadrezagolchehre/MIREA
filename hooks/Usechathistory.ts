@@ -113,7 +113,8 @@ export function useChatHistory(userId?: string) {
         };
       }>(response);
 
-      if (!data.session) return;
+      const savedSession = data.session;
+      if (!savedSession) return;
 
       setSessions((prev) => {
         const exists = prev.find((session) => session.id === sessionId);
@@ -123,10 +124,10 @@ export function useChatHistory(userId?: string) {
             session.id === sessionId
               ? {
                   ...session,
-                  title: data.session!.title,
-                  preview: data.session!.preview,
-                  date: formatDate(data.session!.updatedAt),
-                  updatedAt: data.session!.updatedAt,
+                  title: savedSession.title,
+                  preview: savedSession.preview,
+                  date: formatDate(savedSession.updatedAt),
+                  updatedAt: savedSession.updatedAt,
                 }
               : session
           );
@@ -135,12 +136,12 @@ export function useChatHistory(userId?: string) {
         return [
           {
             id: sessionId,
-            title: data.session.title,
-            preview: data.session.preview,
+            title: savedSession.title,
+            preview: savedSession.preview,
             date: "امروز",
             messages: [],
-            createdAt: data.session.updatedAt,
-            updatedAt: data.session.updatedAt,
+            createdAt: savedSession.updatedAt,
+            updatedAt: savedSession.updatedAt,
           },
           ...prev,
         ];

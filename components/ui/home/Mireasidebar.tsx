@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Plus, Sparkles, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatSession } from "../../../hooks/Usechathistory";
-import { useIsMobile } from "../../../hooks/use-mobile";
 
 type Props = {
   sessions: ChatSession[];
@@ -23,8 +22,7 @@ export default function MiraSidebar({
 }: Props) {
   const [open, setOpen] = useState<boolean | null>(null);
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
-  const isMobile = useIsMobile();
-  const isOpen = open ?? !isMobile;
+  const isOpen = open ?? false;
 
   const groupedSessions = groupSessionsByDate(sessions);
 
@@ -46,7 +44,7 @@ export default function MiraSidebar({
         aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
         onClick={() => setOpen(!isOpen)}
         className={cn(
-          "fixed top-8 z-40 transition-all duration-300",
+          "fixed top-4 z-40 transition-all duration-300 sm:top-6",
           "h-9 w-9 md:h-7 md:w-7 rounded-full",
           "bg-white/10 backdrop-blur-xl border border-white/20",
           "flex items-center justify-center",

@@ -7,6 +7,7 @@ export type AuthUser = {
   phone: string;
   firstName: string;
   lastName?: string;
+  birthDate?: string;
 };
 
 const STORAGE_KEY = "mira_user";

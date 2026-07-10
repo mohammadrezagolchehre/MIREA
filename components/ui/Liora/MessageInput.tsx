@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { CornerLeftUp, Square } from "lucide-react";
-import { GlassButton } from "@/components/ui/glass-button";
 import { GlassTextarea } from "@/components/glass-textarea";
 
 type MessageInputProps = {
@@ -74,18 +73,24 @@ export default function MessageInput({
         }}
       />
 
-      <GlassButton
-        variant={isStreaming ? "outline" : hasText ? "default" : "outline"}
-        size="icon"
+      <button
+        type="button"
         onClick={() => {
           if (isStreaming) onStop();
           else handleSend();
         }}
         disabled={!hasText && !isStreaming}
-        className="absolute left-3 bottom-7 sm:bottom-8 md:bottom-9.5 h-9 w-9"
+        className={`
+          absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl
+          border border-white/15 bg-white/[0.08] text-white/70 shadow-[0_8px_24px_rgba(0,0,0,0.16)]
+          backdrop-blur-xl transition-all duration-200
+          hover:border-white/25 hover:bg-white/[0.12] hover:text-white/90
+          disabled:pointer-events-none disabled:opacity-45
+          ${hasText && !isStreaming ? "border-cyan-200/25 bg-white/10 text-cyan-100/90" : ""}
+        `}
       >
         {isStreaming ? <Square size={16} /> : <CornerLeftUp size={18} />}
-      </GlassButton>
+      </button>
     </div>
   );
 }

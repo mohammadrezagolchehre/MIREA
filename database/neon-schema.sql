@@ -5,9 +5,13 @@ create table if not exists users (
   phone text not null unique,
   first_name text not null,
   last_name text,
+  birth_date date,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table users
+  add column if not exists birth_date date;
 
 create table if not exists chat_sessions (
   id uuid primary key,
