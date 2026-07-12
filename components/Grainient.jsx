@@ -161,6 +161,7 @@ const Grainient = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    try {
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
@@ -263,6 +264,9 @@ const Grainient = ({
         // Ignore
       }
     };
+    } catch (error) {
+      console.warn('Grainient disabled because WebGL setup failed.', error);
+    }
   }, [
     timeSpeed,
     colorBalance,

@@ -1,0 +1,22 @@
+
+> liora@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.110.49:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 2.6s
+○ Compiling / ...
+ GET / 200 in 4.6s (compile: 4.1s, render: 453ms)
+ GET / 200 in 97ms (compile: 44ms, render: 53ms)
+ GET / 200 in 64ms (compile: 7ms, render: 57ms)
+ GET / 200 in 1977ms (compile: 1866ms, render: 111ms)
+ GET / 200 in 87ms (compile: 12ms, render: 75ms)
+ GET / 200 in 93ms (compile: 10ms, render: 83ms)
+ GET / 200 in 52ms (compile: 10ms, render: 42ms)
+ GET / 200 in 244ms (compile: 8ms, render: 236ms)
+ GET / 200 in 49ms (compile: 7ms, render: 42ms)
+ GET / 200 in 55ms (compile: 5ms, render: 50ms)

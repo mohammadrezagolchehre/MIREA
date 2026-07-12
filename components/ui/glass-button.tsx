@@ -76,14 +76,16 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
   ({ className, variant, asChild = false, size, glowEffect = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button'
     return (
-      <div className="relative inline-block">
-        {glowEffect && (
-          <div className="bg-gradient-to-r from-[#8C86FF]/30 via-[#6CA7FF]/30 to-[#F3A6FF]/30 blur-2xl opacity-60" />
+      <Comp
+        className={cn(
+          glassButtonVariants({ variant, size, className }),
+          glowEffect && "shadow-[0_10px_36px_rgba(108,167,255,0.3)]",
         )}
-        <Comp className={cn(glassButtonVariants({ variant, size, className }))} ref={ref} {...props}>
-          <span className="relative z-10 flex items-center gap-2">{children}</span>
-        </Comp>
-      </div>
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </Comp>
     )
   },
 )

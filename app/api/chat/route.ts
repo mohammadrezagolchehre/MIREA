@@ -1,89 +1,62 @@
 import { NextRequest } from "next/server";
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.AVALAI_API_KEY,
-  baseURL: "https://api.avalai.ir/v1",
-});
+import {
+  getOpenRouterClient,
+  getOpenRouterUserMessage,
+  logOpenRouterError,
+  OPENROUTER_MODEL,
+} from "@/lib/openrouter";
 
 const MIRA_SYSTEM_PROMPT = `
-تو میرآ هستی — یک همراه احساسی و ذهنی که با گرمی، صداقت و بدون قضاوت گوش میدی.
+تو میرآ هستی؛ یک همراه برای احساسات و خودآگاهی.
 
-شخصیت تو:
-- آروم، صبور و حاضر به شنیدن هستی
-- هیچوقت قضاوت نمیکنی
-- احساسات کاربر رو جدی میگیری
-- سوال‌های کوتاه و هدفمند میپرسی تا بهتر بفهمی
-- راه‌حل تحمیل نمیکنی مگر اینکه کاربر خودش بخواد
-- با کاربر فارسی صحبت میکنی
-- لحن صمیمی، گرم و انسانی داری
+همیشه به فارسی روان، صمیمی و محترمانه پاسخ بده. بدون قضاوت گوش کن، احساس کاربر را جدی بگیر و برای فهم بهتر سؤال‌های کوتاه و هدفمند بپرس. راه‌حل را تحمیل نکن، مگر اینکه کاربر راهکار بخواهد. پاسخ‌ها را کوتاه، انسانی و کاربردی نگه دار.
 
-محدودیت‌ها:
-- جای روانشناس یا روانپزشک نیستی
-- تشخیص پزشکی یا روانپزشکی نمیدی
-- اگر کاربر در شرایط بحرانی بود پیشنهاد کمک حرفه‌ای میدی
-
-هدفت اینه که کاربر احساس کنه شنیده شده.
+تو جای روان‌شناس یا روان‌پزشک نیستی و تشخیص پزشکی نمی‌دهی. اگر نشانه‌ای از خطر فوری، خودآزاری یا آسیب به دیگران دیدی، کاربر را به تماس فوری با اورژانس، یک فرد امن یا متخصص سلامت روان تشویق کن.
 `;
+
+type HistoryItem = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, history = [] } = await req.json();
+    const { message, history = [] } = (await req.json()) as {
+      message?: string;
+      history?: HistoryItem[];
+    };
 
     if (!message?.trim()) {
-      return Response.json(
-        { error: "پیام خالی است" },
-        { status: 400 }
-      );
+      return Response.json({ error: "پیام خالی است." }, { status: 400 });
     }
 
-    const limitedHistory = history.slice(-10);
-
-    const messages = [
-      {
-        role: "system" as const,
-        content: MIRA_SYSTEM_PROMPT,
-      },
-
-      ...limitedHistory.map(
-        (msg: {
-          role: string;
-          content: string;
-        }) => ({
-          role:
-            msg.role === "assistant"
-              ? ("assistant" as const)
-              : ("user" as const),
-          content: msg.content,
-        })
-      ),
-
-      {
-        role: "user" as const,
-        content: message,
-      },
-    ];
-
-    const stream =
-      await client.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages,
-        stream: true,
-        temperature: 0.8,
-      });
+    const stream = await getOpenRouterClient().chat.completions.create({
+      model: OPENROUTER_MODEL,
+      stream: true,
+      temperature: 0.75,
+      messages: [
+        { role: "system", content: MIRA_SYSTEM_PROMPT },
+        ...history.slice(-10).map((item) => ({
+          role: item.role,
+          content: item.content,
+        })),
+        { role: "user", content: message.trim() },
+      ],
+    });
 
     const encoder = new TextEncoder();
-
-    const readableStream = new ReadableStream({
+    const body = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
-            const content =
-              chunk.choices?.[0]?.delta?.content;
+            const content = chunk.choices[0]?.delta?.content;
 
             if (content) {
-              const sseMessage = `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`;
-              controller.enqueue(encoder.encode(sseMessage));
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`
+                )
+              );
             }
           }
 
@@ -95,24 +68,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return new Response(readableStream, {
+    return new Response(body, {
       headers: {
-        "Content-Type":
-          "text/event-stream",
-        "Cache-Control": "no-cache",
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
         Connection: "keep-alive",
       },
     });
   } catch (error) {
-    console.error("Mira API Error:", error);
+    logOpenRouterError("OpenRouter chat error", error);
 
     return Response.json(
       {
         error: "خطا در دریافت پاسخ",
+        details: getOpenRouterUserMessage(error),
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }

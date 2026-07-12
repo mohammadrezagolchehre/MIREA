@@ -5,14 +5,11 @@ import GuestHeader from "./GuestHeader";
 import GradientText from "@/components/ui/GradiantText";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
 import { Message } from "@/app/types/message";
-import { AuthUser } from "../../../hooks/UseAuth";
 export default function GuestView() {
   const [messages, setMessages] = useState<Message[]>([]);
 
   return (
     <div className="relative min-h-screen isolate">
-      <div className="fixed inset-0 -z-10 bg-black/30 pointer-events-none" />
-
       <main className="relative h-dvh flex flex-col px-4">
 
         <GuestHeader/>
@@ -35,7 +32,7 @@ export default function GuestView() {
 
         {/* Chat */}
         <section className={messages.length === 0 ? "pb-4" : "flex-1 flex flex-col pb-4"}>
-          <div className="max-w-3xl mx-auto w-full h-full">
+          <div className="mx-auto h-full w-full max-w-3xl">
             <ChatContainer
               messages={messages}
               setMessages={setMessages}

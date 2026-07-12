@@ -14,11 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" >
+    <html lang="fa" dir="rtl">
       <body>
         <EmotionProvider>
           <BackgroundWrapper />
-          {children}
+          <div className="relative z-10 min-h-dvh">{children}</div>
         </EmotionProvider>
       </body>
     </html>

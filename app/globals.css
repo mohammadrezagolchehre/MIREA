@@ -136,6 +136,26 @@
 }
 }
 @layer utilities {
+    @keyframes mirea-gradient-drift {
+      0%, 100% {
+        transform: translate3d(-2%, -1%, 0) scale(1.03) rotate(-1deg);
+      }
+      50% {
+        transform: translate3d(2%, 1.5%, 0) scale(1.08) rotate(1deg);
+      }
+    }
+
+    .mirea-gradient-fallback {
+      animation: mirea-gradient-drift 14s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mirea-gradient-fallback {
+        animation: none;
+      }
+    }
+
     @keyframes typing-wave {
       0%, 100% {
         transform: scaleY(0.45);

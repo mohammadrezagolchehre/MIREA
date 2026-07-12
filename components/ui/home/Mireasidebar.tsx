@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatSession } from "../../../hooks/Usechathistory";
+import MiraBrand from "./MiraBrand";
 
 type Props = {
   sessions: ChatSession[];
@@ -66,10 +67,7 @@ export default function MiraSidebar({
         <div className="flex flex-col h-full" dir="rtl">
 
           <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400/40 to-blue-500/40 border border-white/20 flex items-center justify-center shrink-0">
-              <Sparkles size={14} className="text-cyan-300" />
-            </div>
-            <span className="text-white/70 text-sm font-medium">میرآ</span>
+            <MiraBrand compact />
           </div>
 
           <div className="px-3 py-3">

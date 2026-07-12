@@ -20,6 +20,7 @@ import {
 } from "@/components/glass-dropdown-menu";
 import { useAuth, AuthUser } from "../../../hooks/UseAuth";
 import { useRouter } from "next/navigation";
+import MiraBrand from "./MiraBrand";
 
 type Props = {
   user: AuthUser;
@@ -66,7 +67,10 @@ export default function DashboardHeader({ user }: Props) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-end gap-3 px-5 py-4 bg-black/20 backdrop-blur-xl border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-transparent">
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-3 px-5 py-4 bg-black/20 backdrop-blur-xl border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-transparent">
+      <MiraBrand />
+
+      <div className="flex items-center gap-3">
       <GlassButton variant="subscription" className="h-10 px-4 text-sm" onClick={() => router.push("/pricing")}>
         خرید اشتراک
       </GlassButton>
@@ -109,6 +113,7 @@ export default function DashboardHeader({ user }: Props) {
           </GlassDropdownMenuItem>
         </GlassDropdownMenuContent>
       </GlassDropdownMenu>
+      </div>
 
       <GlassDialog open={profileOpen} onOpenChange={(o) => { setProfileOpen(o); if (!o) { setIsEditing(false); resetProfileDraft(); } }}>
         <GlassDialogContent className="max-w-md">

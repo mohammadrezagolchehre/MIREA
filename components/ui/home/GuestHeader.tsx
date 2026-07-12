@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/glass-dialog";
 import { GlassInput } from "@/components/ui/glass-input";
 import { useAuth } from "../../../hooks/UseAuth";
+import MiraBrand from "./MiraBrand";
 
 type Step = "phone" | "otp";
 
@@ -183,12 +184,10 @@ export default function GuestHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-end gap-3 px-5 py-4
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-3 px-5 py-4
       bg-black/20 backdrop-blur-xl border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-transparent">
 
-      <GlassButton variant="subscription">
-        خرید اشتراک
-      </GlassButton>
+      <MiraBrand />
 
       <GlassDropdownMenu open={open} onOpenChange={(nextOpen) => {
         setOpen(nextOpen);
@@ -383,6 +382,9 @@ export default function GuestHeader() {
           </div>
         </GlassDialogContent>
       </GlassDialog>
+            {/* <GlassButton variant="subscription">
+        خرید اشتراک
+      </GlassButton> */}
     </header>
   );
 }
