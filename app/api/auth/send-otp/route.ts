@@ -1,68 +1,70 @@
+import { randomInt } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { hasDatabaseUrl, isTestOtpValid, saveDevOtp } from "@/lib/dev-otp";
-
-function generateOtp(): string {
-  if (process.env.OTP_TEST_CODE) {
-    return process.env.OTP_TEST_CODE;
-  }
-
-  return Math.floor(10000 + Math.random() * 90000).toString();
-}
-
-function logOtp(phone: string, code: string) {
-  if (process.env.NODE_ENV === "production" && process.env.OTP_DEBUG !== "true") {
-    return;
-  }
-
-  console.info("");
-  console.info("========================================");
-  console.info(" MIREA LOGIN OTP");
-  console.info(` Phone: ${phone}`);
-  console.info(` Code:  ${code}`);
-  console.info(" Expires in: 2 minutes");
-  console.info("========================================");
-  console.info("");
-}
+import { hashOtp } from "@/lib/auth/session";
+import {
+  forbiddenOrigin,
+  getClientAddress,
+  isSameOrigin,
+  normalizePhone,
+} from "@/lib/request-security";
+import {
+  enforceRateLimit,
+  RateLimitError,
+  rateLimitResponse,
+} from "@/lib/rate-limit";
+import { developmentOtpCode, sendOtpSms } from "@/lib/sms";
 
 export async function POST(req: NextRequest) {
-  try {
-    const { phone } = await req.json();
+  if (!isSameOrigin(req)) return forbiddenOrigin();
 
-    if (!phone || phone.length < 10) {
+  let phone: string | null = null;
+
+  try {
+    const body = (await req.json()) as { phone?: unknown };
+    phone = normalizePhone(body.phone);
+
+    if (!phone) {
       return NextResponse.json(
         { error: "شماره تلفن معتبر نیست" },
         { status: 400 }
       );
     }
 
-    const code = generateOtp();
+    const ip = getClientAddress(req);
+    await enforceRateLimit("otp-ip", ip, 10, 10 * 60);
+    await enforceRateLimit("otp-phone", phone, 5, 10 * 60);
+
+    const code = developmentOtpCode() ?? randomInt(10_000, 100_000).toString();
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
 
-    logOtp(phone, code);
-
-    if (isTestOtpValid(code) || !hasDatabaseUrl()) {
-      saveDevOtp(phone, code, expiresAt);
-
-      if (!hasDatabaseUrl()) {
-        console.warn("DATABASE_URL is not set. Using in-memory OTP for local testing.");
-      }
-
-      return NextResponse.json({ success: true });
-    }
-
-    await db("DELETE FROM otp_codes WHERE phone = $1", [phone]);
+    await db("DELETE FROM otp_codes WHERE phone = $1 OR expires_at <= now()", [
+      phone,
+    ]);
     await db(
-      "INSERT INTO otp_codes (phone, code, expires_at) VALUES ($1, $2, $3)",
-      [phone, code, expiresAt.toISOString()]
+      `INSERT INTO otp_codes (phone, code, expires_at)
+       VALUES ($1, $2, $3)`,
+      [phone, hashOtp(phone, code), expiresAt.toISOString()]
     );
+
+    try {
+      await sendOtpSms(phone, code);
+    } catch (error) {
+      await db("DELETE FROM otp_codes WHERE phone = $1", [phone]);
+      throw error;
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("send-otp error:", error);
+    if (error instanceof RateLimitError) return rateLimitResponse(error);
+
+    console.error("send-otp error:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      phoneConfigured: Boolean(phone),
+    });
     return NextResponse.json(
-      { error: "خطا در ارسال کد" },
-      { status: 500 }
+      { error: "ارسال کد فعلاً ممکن نیست؛ کمی بعد دوباره تلاش کن." },
+      { status: 503 }
     );
   }
 }

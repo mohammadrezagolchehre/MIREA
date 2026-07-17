@@ -53,10 +53,10 @@ export default function MessageBubble({ message, onEdit }: Props) {
       animate={{ y: 0, opacity: 1, scale: 1 }}
       transition={{ duration: 0.28, ease: "easeOut" }}
       className={`
-        group relative max-w-[92%] rounded-2xl backdrop-blur-2xl transition-all duration-300 sm:max-w-[90%]
+        group relative w-fit max-w-[92%] rounded-2xl backdrop-blur-2xl transition-all duration-300 sm:max-w-[90%]
         ${isUser
-          ? "self-end bg-white/15 border border-white/25 text-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
-          : "self-start bg-white/8 border border-cyan-300/20 text-white/85 shadow-[inset_1px_0_0_rgba(103,232,249,0.22),0_10px_30px_rgba(0,0,0,0.12)]"
+          ? "ml-auto bg-white/15 border border-white/25 text-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+          : "mr-auto bg-white/8 border border-cyan-300/20 text-white/85 shadow-[inset_1px_0_0_rgba(103,232,249,0.22),0_10px_30px_rgba(0,0,0,0.12)]"
         }
       `}
     >

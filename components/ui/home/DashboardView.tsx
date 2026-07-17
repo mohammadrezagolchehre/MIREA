@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import ChatContainer from "@/components/ui/Liora/ChatContainer";
 import MiraSidebar from "./Mireasidebar";
@@ -17,7 +17,7 @@ export default function DashboardView({ user }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeChatId, setActiveChatId] = useState<string>(() => crypto.randomUUID());
   const [pendingMessage, setPendingMessage] = useState("");
-  const { sessions, saveSession, loadSession, deleteSession } = useChatHistory(user.id);
+  const { sessions, saveSession, loadSession, deleteSession } = useChatHistory();
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function DashboardView({ user }: Props) {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [messages, activeChatId]);
+  }, [messages, activeChatId, saveSession]);
 
   const handleNewChat = () => {
     if (activeChatId && messages.length > 0) {
@@ -48,6 +48,14 @@ export default function DashboardView({ user }: Props) {
     setActiveChatId(id);
   };
 
+  const handleWelcomeSelect = useCallback((text: string) => {
+    setPendingMessage(text);
+  }, []);
+
+  const handlePendingMessageSent = useCallback(() => {
+    setPendingMessage("");
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <MiraSidebar
@@ -63,25 +71,28 @@ export default function DashboardView({ user }: Props) {
 
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col px-3 sm:px-4">
-            {messages.length === 0 ? (
-              <>
-                <WelcomeScreen
-                  firstName={user.firstName}
-                  onSelect={(text) => setPendingMessage(text)}
-                />
-                <div className="shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-6">
-                  <ChatContainer
-                    messages={messages}
-                    setMessages={setMessages}
-                    inputOnly
-                    pendingMessage={pendingMessage}
-                    onPendingMessageSent={() => setPendingMessage("")}
-                  />
-                </div>
-              </>
-            ) : (
-              <ChatContainer messages={messages} setMessages={setMessages} />
+            {messages.length === 0 && (
+              <WelcomeScreen
+                firstName={user.firstName}
+                onSelect={handleWelcomeSelect}
+              />
             )}
+
+            <div
+              className={
+                messages.length === 0
+                  ? "shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-6"
+                  : "flex min-h-0 flex-1 flex-col"
+              }
+            >
+              <ChatContainer
+                messages={messages}
+                setMessages={setMessages}
+                inputOnly={messages.length === 0}
+                pendingMessage={pendingMessage}
+                onPendingMessageSent={handlePendingMessageSent}
+              />
+            </div>
           </div>
         </main>
       </div>

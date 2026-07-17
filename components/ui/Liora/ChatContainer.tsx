@@ -2,7 +2,7 @@
 
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Message } from "../../../app/types/message";
 import { useEmotion } from "../../context/EmotionContext";
 
@@ -17,37 +17,38 @@ type Props = {
 export default function ChatContainer({ messages, setMessages, inputOnly, pendingMessage, onPendingMessageSent }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const stopRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const messagesRef = useRef(messages);
+  const isStreamingRef = useRef(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [editValue, setEditValue] = useState<string>("");
   const { detectEmotion } = useEmotion();
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  messagesRef.current = messages;
 
   useEffect(() => {
-    if (pendingMessage) {
-      handleSend(pendingMessage);
-      onPendingMessageSent?.();
-    }
-  }, [pendingMessage]);
+    bottomRef.current?.scrollIntoView({ behavior: isStreaming ? "auto" : "smooth" });
+  }, [messages, isStreaming]);
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
     stopRef.current = true;
+    abortControllerRef.current?.abort();
+    isStreamingRef.current = false;
     setIsStreaming(false);
-  };
+  }, []);
 
-  const handleEdit = (id: string, content: string) => {
+  const handleEdit = useCallback((id: string, content: string) => {
     setEditValue(content);
     setMessages((prev) => {
       const index = prev.findIndex((m) => m.id === id);
       return prev.slice(0, index);
     });
-  };
+  }, [setMessages]);
 
-  const handleSend = async (text: string) => {
-    if (!text.trim() || isStreaming) return;
+  const handleSend = useCallback(async (text: string) => {
+    if (!text.trim() || isStreamingRef.current) return;
     stopRef.current = false;
+    isStreamingRef.current = true;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -57,7 +58,7 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
       status: "completed",
     };
 
-    const updatedMessages = [...messages, userMessage];
+    const updatedMessages = [...messagesRef.current, userMessage];
     setMessages(updatedMessages);
 
     const aiId = crypto.randomUUID();
@@ -67,9 +68,23 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
     ]);
 
     setIsStreaming(true);
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    let fullContent = "";
+    let renderFrame: number | null = null;
+
+    const renderStream = () => {
+      renderFrame = null;
+      const content = fullContent;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiId ? { ...m, content, status: "streaming" } : m
+        )
+      );
+    };
 
     try {
-      const history = updatedMessages
+      const history = messagesRef.current
         .filter((m) => m.status === "completed")
         .map((m) => ({ role: m.role, content: m.content }));
 
@@ -77,23 +92,36 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, history }),
+        signal: abortController.signal,
       });
 
-      if (!response.ok || !response.body) throw new Error("API Error");
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as
+          | { details?: string; error?: string }
+          | null;
+        throw new Error(payload?.details ?? payload?.error ?? "خطا در دریافت پاسخ");
+      }
+
+      if (!response.body) {
+        throw new Error("پاسخی از سرویس هوش مصنوعی دریافت نشد.");
+      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let fullContent = "";
+      let buffer = "";
 
       while (true) {
         if (stopRef.current) break;
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() ?? "";
 
-        for (const line of lines) {
+        for (const event of events) {
+          const line = event.split("\n").find((item) => item.startsWith("data: "));
+          if (!line) continue;
           const json = line.replace("data: ", "").trim();
           if (json === "[DONE]") break;
           try {
@@ -101,24 +129,25 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
             const delta = parsed.choices?.[0]?.delta?.content ?? "";
             if (delta) {
               fullContent += delta;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === aiId ? { ...m, content: fullContent, status: "streaming" } : m
-                )
-              );
+              if (renderFrame === null) {
+                renderFrame = window.requestAnimationFrame(renderStream);
+              }
             }
           } catch { }
         }
       }
 
-      // پیام کامل شد — آپدیت state و تشخیص احساس
+      if (renderFrame !== null) {
+        window.cancelAnimationFrame(renderFrame);
+        renderFrame = null;
+      }
+
       setMessages((prev) =>
         prev.map((m) =>
           m.id === aiId ? { ...m, content: fullContent, status: "completed" } : m
         )
       );
 
-      // 👇 تشخیص احساس بعد از تموم شدن پیام
       const allMessages = [
         ...updatedMessages.map((m) => ({ role: m.role, content: m.content })),
         { role: "assistant", content: fullContent },
@@ -126,20 +155,53 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
       detectEmotion(allMessages);
 
     } catch (error) {
-      console.error(error);
+      if (renderFrame !== null) {
+        window.cancelAnimationFrame(renderFrame);
+      }
+
+      if (stopRef.current || (error instanceof DOMException && error.name === "AbortError")) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiId ? { ...m, content: fullContent, status: "completed" } : m
+          )
+        );
+        return;
+      }
+
+      console.warn("Chat request failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "خطا در دریافت پاسخ";
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === aiId ? { ...m, content: "خطا در دریافت پاسخ", status: "error" } : m
+          m.id === aiId ? { ...m, content: errorMessage, status: "error" } : m
         )
       );
     } finally {
+      abortControllerRef.current = null;
+      isStreamingRef.current = false;
       setIsStreaming(false);
     }
-  };
+  }, [detectEmotion, setMessages]);
+
+  const handleDefaultValueUsed = useCallback(() => {
+    setEditValue("");
+  }, []);
+
+  useEffect(() => {
+    if (!pendingMessage) return;
+    handleSend(pendingMessage);
+    onPendingMessageSent?.();
+  }, [handleSend, onPendingMessageSent, pendingMessage]);
 
   if (inputOnly) {
     return (
-      <MessageInput onSend={handleSend} isStreaming={isStreaming} onStop={handleStop} />
+      <MessageInput
+        onSend={handleSend}
+        isStreaming={isStreaming}
+        onStop={handleStop}
+        defaultValue={editValue}
+        onDefaultValueUsed={handleDefaultValueUsed}
+      />
     );
   }
 
@@ -156,7 +218,7 @@ export default function ChatContainer({ messages, setMessages, inputOnly, pendin
           isStreaming={isStreaming}
           onStop={handleStop}
           defaultValue={editValue}
-          onDefaultValueUsed={() => setEditValue("")}
+          onDefaultValueUsed={handleDefaultValueUsed}
         />
       </div>
     </div>

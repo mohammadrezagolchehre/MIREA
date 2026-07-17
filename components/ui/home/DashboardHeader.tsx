@@ -19,7 +19,6 @@ import {
   GlassDropdownMenuItem,
 } from "@/components/glass-dropdown-menu";
 import { useAuth, AuthUser } from "../../../hooks/UseAuth";
-import { useRouter } from "next/navigation";
 import MiraBrand from "./MiraBrand";
 
 type Props = {
@@ -28,7 +27,6 @@ type Props = {
 
 export default function DashboardHeader({ user }: Props) {
   const { logout, updateProfile } = useAuth();
-  const router = useRouter();
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -40,9 +38,8 @@ export default function DashboardHeader({ user }: Props) {
     ? `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.trim()
     : `${firstName?.[0] ?? ""}`.trim();
 
-  const handleLogout = () => {
-    logout();
-    // page.tsx خودش GuestView نشون میده
+  const handleLogout = async () => {
+    await logout();
   };
 
   const resetProfileDraft = () => {
@@ -51,69 +48,77 @@ export default function DashboardHeader({ user }: Props) {
     setBirthDate(user.birthDate ?? "");
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     const nextFirstName = firstName.trim();
     const nextLastName = lastName.trim();
     if (!nextFirstName) return;
 
-    updateProfile({
+    const updatedUser = await updateProfile({
       firstName: nextFirstName,
       lastName: nextLastName || undefined,
       birthDate: birthDate || undefined,
     });
-    setFirstName(nextFirstName);
-    setLastName(nextLastName);
+    setFirstName(updatedUser.firstName);
+    setLastName(updatedUser.lastName ?? "");
+    setBirthDate(updatedUser.birthDate ?? "");
     setIsEditing(false);
   };
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-3 px-5 py-4 bg-black/20 backdrop-blur-xl border-b border-white/5 md:bg-transparent md:backdrop-blur-none md:border-transparent">
-      <MiraBrand />
+    <header
+      dir="rtl"
+      className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-white/5 bg-black/20 px-3 py-4 backdrop-blur-xl sm:px-5 md:border-transparent md:bg-transparent md:backdrop-blur-none"
+    >
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <MiraBrand />
 
-      <div className="flex items-center gap-3">
-      <GlassButton variant="subscription" className="h-10 px-4 text-sm" onClick={() => router.push("/pricing")}>
-        خرید اشتراک
-      </GlassButton>
-
-      <GlassDropdownMenu>
-        <GlassDropdownMenuTrigger asChild>
-          <button className="group flex h-10 min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] px-2.5 pr-3 text-white/80 shadow-[0_6px_20px_rgba(124,140,255,0.16)] outline-none backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-white/[0.12] hover:text-white/90">
-            <motion.span
-              key={firstName}
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="max-w-28 truncate text-sm font-medium"
-            >
-              {firstName}
-            </motion.span>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              <GlassAvatar
-                glowEffect={false}
-                className="size-8 shrink-0 flex items-center justify-center rounded-full
-                bg-gradient-to-br from-cyan-500/35 to-blue-500/35 border border-white/20
-                text-white/90 text-xs font-bold group-hover:border-cyan-200/40 transition-colors"
+        <GlassDropdownMenu>
+          <GlassDropdownMenuTrigger asChild>
+            <button className="group flex h-10 min-w-0 items-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] px-2.5 text-white/80 shadow-[0_6px_20px_rgba(124,140,255,0.16)] outline-none backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-white/[0.12] hover:text-white/90">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                {avatarText || "م"}
-              </GlassAvatar>
-            </motion.div>
-          </button>
-        </GlassDropdownMenuTrigger>
+                <GlassAvatar
+                  glowEffect={false}
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full
+                  border border-white/20 bg-gradient-to-br from-cyan-500/35 to-blue-500/35
+                  text-xs font-bold text-white/90 transition-colors group-hover:border-cyan-200/40"
+                >
+                  {avatarText || "م"}
+                </GlassAvatar>
+              </motion.div>
+              <motion.span
+                key={firstName}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="max-w-20 truncate text-sm font-medium sm:max-w-28"
+              >
+                {firstName}
+              </motion.span>
+            </button>
+          </GlassDropdownMenuTrigger>
 
-        <GlassDropdownMenuContent align="end">
-          <GlassDropdownMenuItem dir="rtl" onClick={() => setProfileOpen(true)}>
-            پروفایل
-          </GlassDropdownMenuItem>
-          <GlassDropdownMenuItem dir="rtl" onClick={handleLogout} className="text-red-400">
-            خروج
-          </GlassDropdownMenuItem>
-        </GlassDropdownMenuContent>
-      </GlassDropdownMenu>
+          <GlassDropdownMenuContent align="start">
+            <GlassDropdownMenuItem dir="rtl" onClick={() => setProfileOpen(true)}>
+              پروفایل
+            </GlassDropdownMenuItem>
+            <GlassDropdownMenuItem dir="rtl" onClick={handleLogout} className="text-red-400">
+              خروج
+            </GlassDropdownMenuItem>
+          </GlassDropdownMenuContent>
+        </GlassDropdownMenu>
       </div>
+
+      {/* <GlassButton
+        variant="subscription"
+        className="h-10 shrink-0 px-3 text-xs sm:px-4 sm:text-sm"
+        onClick={() => router.push("/pricing")}
+      >
+        خرید اشتراک
+      </GlassButton> */}
 
       <GlassDialog open={profileOpen} onOpenChange={(o) => { setProfileOpen(o); if (!o) { setIsEditing(false); resetProfileDraft(); } }}>
         <GlassDialogContent className="max-w-md">

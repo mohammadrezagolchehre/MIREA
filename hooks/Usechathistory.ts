@@ -35,30 +35,20 @@ function formatDate(iso: string): string {
 }
 
 async function readJson<T>(response: Response): Promise<T> {
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.error ?? "Request failed");
-  }
-
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data?.error ?? "Request failed");
   return data as T;
 }
 
-export function useChatHistory(userId?: string) {
+export function useChatHistory() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadSessions = useCallback(async () => {
-    if (!userId) return;
-
     setLoading(true);
-
     try {
-      const response = await fetch(
-        `/api/chat-history?userId=${encodeURIComponent(userId)}`
-      );
+      const response = await fetch("/api/chat-history", { cache: "no-store" });
       const data = await readJson<{ sessions: SessionResponse[] }>(response);
-
       setSessions(
         data.sessions.map((session) => ({
           id: session.id,
@@ -70,57 +60,50 @@ export function useChatHistory(userId?: string) {
           updatedAt: session.updated_at,
         }))
       );
-    } catch (err) {
-      console.error("loadSessions error:", err);
+    } catch (error) {
+      console.error("loadSessions error:", error);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     loadSessions();
   }, [loadSessions]);
 
-  const loadSession = async (sessionId: string): Promise<Message[]> => {
-    if (!userId) return [];
-
+  const loadSession = useCallback(async (sessionId: string): Promise<Message[]> => {
     try {
-      const params = new URLSearchParams({ userId, sessionId });
-      const response = await fetch(`/api/chat-history?${params.toString()}`);
+      const response = await fetch(
+        `/api/chat-history?sessionId=${encodeURIComponent(sessionId)}`,
+        { cache: "no-store" }
+      );
       const data = await readJson<{ messages: Message[] }>(response);
       return data.messages;
-    } catch (err) {
-      console.error("loadSession error:", err);
+    } catch (error) {
+      console.error("loadSession error:", error);
       return [];
     }
-  };
+  }, []);
 
-  const saveSession = async (sessionId: string, messages: Message[]) => {
-    if (!userId || messages.length === 0) return;
+  const saveSession = useCallback(async (sessionId: string, messages: Message[]) => {
+    if (messages.length === 0) return;
 
     try {
       const response = await fetch("/api/chat-history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, sessionId, messages }),
+        body: JSON.stringify({ sessionId, messages }),
       });
       const data = await readJson<{
-        session?: {
-          id: string;
-          title: string;
-          preview: string;
-          updatedAt: string;
-        };
+        session?: { id: string; title: string; preview: string; updatedAt: string };
       }>(response);
-
       const savedSession = data.session;
       if (!savedSession) return;
 
-      setSessions((prev) => {
-        const exists = prev.find((session) => session.id === sessionId);
-
+      setSessions((previous) => {
+        const exists = previous.some((session) => session.id === sessionId);
         if (exists) {
-          return prev.map((session) =>
+          return previous.map((session) =>
             session.id === sessionId
               ? {
                   ...session,
@@ -143,31 +126,28 @@ export function useChatHistory(userId?: string) {
             createdAt: savedSession.updatedAt,
             updatedAt: savedSession.updatedAt,
           },
-          ...prev,
+          ...previous,
         ];
       });
-    } catch (err) {
-      console.error("saveSession error:", err);
+    } catch (error) {
+      console.error("saveSession error:", error);
     }
-  };
+  }, []);
 
-  const deleteSession = async (sessionId: string) => {
-    if (!userId) return;
-
+  const deleteSession = useCallback(async (sessionId: string) => {
     try {
-      const params = new URLSearchParams({ userId, sessionId });
-      const response = await fetch(`/api/chat-history?${params.toString()}`, {
-        method: "DELETE",
-      });
-
-      await readJson<{ success: boolean }>(response);
-      setSessions((prev) =>
-        prev.filter((session) => session.id !== sessionId)
+      const response = await fetch(
+        `/api/chat-history?sessionId=${encodeURIComponent(sessionId)}`,
+        { method: "DELETE" }
       );
-    } catch (err) {
-      console.error("deleteSession error:", err);
+      await readJson<{ success: boolean }>(response);
+      setSessions((previous) =>
+        previous.filter((session) => session.id !== sessionId)
+      );
+    } catch (error) {
+      console.error("deleteSession error:", error);
     }
-  };
+  }, []);
 
   return { sessions, loading, saveSession, loadSession, deleteSession };
 }

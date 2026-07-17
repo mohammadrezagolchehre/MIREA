@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# میرآ (Mira)
 
-## Getting Started
+میرآ یک دستیار فارسی‌زبان برای گفت‌وگو درباره احساسات و افزایش خودآگاهی است. رابط کاربری با Next.js و Glass UI ساخته شده، پاسخ‌ها از OpenRouter به‌صورت زنده دریافت می‌شوند و حساب‌ها و تاریخچه گفت‌وگو در Neon Postgres ذخیره می‌شوند.
 
-First, run the development server:
+> میرآ ابزار خودآگاهی است و جایگزین روان‌درمانی، تشخیص پزشکی یا خدمات اورژانسی نیست.
+
+## پیش‌نیازها
+
+- Node.js 20.9 یا جدیدتر
+- دیتابیس Neon Postgres
+- کلید OpenRouter
+- حساب Kavenegar برای ارسال OTP در محیط production
+
+## اجرای محلی
 
 ```bash
+npm install
+npm run db:migrate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+سپس `http://localhost:3000` را باز کنید. برای تست OTP محلی می‌توانید `OTP_TEST_CODE` و `OTP_DEBUG` را فقط در `.env.local` تنظیم کنید.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## متغیرهای محیطی
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+فایل [env.example](./env.example) فهرست کامل متغیرها را دارد:
 
-## Learn More
+- `DATABASE_URL`: آدرس اتصال Neon Postgres
+- `AUTH_SECRET`: یک مقدار تصادفی و طولانی برای هش OTP و نشست‌ها
+- `SMS_PROVIDER`: در production برابر `kavenegar`
+- `KAVENEGAR_API_KEY`: کلید محرمانه پیامک
+- `KAVENEGAR_TEMPLATE`: نام الگوی VerifyLookup، پیش‌فرض `mira-otp`
+- `OPENROUTER_API_KEY`: کلید OpenRouter
+- `OPENROUTER_MODEL`: مدل اصلی رایگان
+- `OPENROUTER_FALLBACK_MODELS`: مدل‌های جایگزین با کاما
+- `OPENROUTER_SITE_URL`: دامنه نهایی برنامه
+- `OPENROUTER_APP_NAME`: نام برنامه در OpenRouter
 
-To learn more about Next.js, take a look at the following resources:
+`OTP_TEST_CODE` و `OTP_DEBUG` فقط برای توسعه محلی هستند و نباید در Production یا Preview تعریف شوند.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## احراز هویت و امنیت
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- ورود با شماره موبایل و OTP انجام می‌شود.
+- نشست کاربر با توکن تصادفی در کوکی `httpOnly` نگهداری و فقط هش آن در Neon ذخیره می‌شود.
+- OTP به‌صورت هش‌شده ذخیره می‌شود و محدودیت تعداد درخواست و تلاش دارد.
+- API تاریخچه، شناسه کاربر را فقط از نشست سمت سرور می‌گیرد.
+- عملیات تغییردهنده داده، درخواست‌های cross-origin را رد می‌کنند.
 
-## Deploy on Vercel
+## دیتابیس
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+ساختار جداول در [database/neon-schema.sql](./database/neon-schema.sql) قرار دارد. برای اعمال migrationهای idempotent اجرا کنید:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:migrate
+```
+
+## بررسی قبل از انتشار
+
+```bash
+npm run lint
+npm run build
+npm audit --omit=dev
+npm start
+```
+
+مراحل تنظیم Vercel، دامنه، پیامک و تست نهایی در [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) ثبت شده‌اند.

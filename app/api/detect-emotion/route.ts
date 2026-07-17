@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOpenRouterClient, OPENROUTER_MODEL } from "@/lib/openrouter";
+import type OpenAI from "openai";
+import {
+  getOpenRouterClient,
+  OPENROUTER_FALLBACK_MODELS,
+  OPENROUTER_MODEL,
+} from "@/lib/openrouter";
+import { getSessionUser } from "@/lib/auth/session";
+import {
+  forbiddenOrigin,
+  getClientAddress,
+  isSameOrigin,
+} from "@/lib/request-security";
+import {
+  enforceRateLimit,
+  RateLimitError,
+  rateLimitResponse,
+} from "@/lib/rate-limit";
 
 const VALID_EMOTIONS = [
   "neutral",
@@ -27,7 +43,17 @@ function detectClearEmotion(context: string) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!isSameOrigin(req)) return forbiddenOrigin();
+
   try {
+    const user = await getSessionUser(req);
+    await enforceRateLimit(
+      "emotion",
+      user?.id ?? getClientAddress(req),
+      90,
+      10 * 60
+    );
+
     const { context } = (await req.json()) as { context?: string };
 
     if (!context?.trim()) {
@@ -39,8 +65,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ emotion: clearEmotion });
     }
 
-    const response = await getOpenRouterClient().chat.completions.create({
+    const completionRequest: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming & {
+      models?: string[];
+    } = {
       model: OPENROUTER_MODEL,
+      models: OPENROUTER_FALLBACK_MODELS,
       temperature: 0,
       max_tokens: 8,
       messages: [
@@ -51,7 +80,11 @@ export async function POST(req: NextRequest) {
         },
         { role: "user", content: context.slice(-4000) },
       ],
-    });
+    };
+
+    const response = await getOpenRouterClient().chat.completions.create(
+      completionRequest
+    );
 
     const raw = response.choices[0]?.message?.content
       ?.trim()
@@ -61,6 +94,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ emotion });
   } catch (error) {
+    if (error instanceof RateLimitError) return rateLimitResponse(error);
     console.error("OpenRouter emotion error:", error);
     return NextResponse.json({ emotion: "neutral" });
   }
